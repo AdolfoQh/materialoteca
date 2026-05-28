@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#132247">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Materialoteca · Tecnología 2 FAD UNCuyo</title>
+  <link rel="manifest" href="manifest.json">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --azul:   #132247;
+      --coral:  #FF5943;
+      --dorado: #EDC863;
+      --fondo:  #F4F2EE;
+      --blanco: #FFFFFF;
+      --texto:  #222222;
+      --sutil:  #888888;
+      --borde:  #E0DDD8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: var(--fondo);
+      color: var(--texto);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--azul);
+      padding: 0 20px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-marca {
+      font-family: 'Roboto Slab', serif;
+      font-weight: 700;
+      color: white;
+      font-size: 15px;
+    }
+    .header-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      font-weight: 300;
+    }
+    .header-nav button {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.6);
+      font-size: 12px;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-family: 'Roboto', sans-serif;
+      transition: all 0.2s;
+    }
+    .header-nav button.active,
+    .header-nav button:hover {
+      color: white;
+      background: rgba(255,255,255,0.12);
+    }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      max-width: 760px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 28px 20px 80px;
+    }
+
+    /* ── PANTALLAS ── */
+    .pantalla { display: none; }
+    .pantalla.visible { display: block; }
+
+    /* ── CONSULTA ── */
+    .consulta-intro {
+      margin-bottom: 28px;
+    }
+    .consulta-intro h1 {
+      font-family: 'Roboto Slab', serif;
+      font-size: 22px;
+      color: var(--azul);
+      margin-bottom: 6px;
+    }
+    .consulta-intro p {
+      font-size: 13px;
+      color: var(--sutil);
+      line-height: 1.6;
+    }
+
+    /* Sugerencias */
+    .sugerencias {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .sugerencia {
+      background: white;
+      border: 1.5px solid var(--borde);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 12px;
+      color: var(--azul);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Roboto', sans-serif;
+    }
+    .sugerencia:hover {
+      border-color: var(--coral);
+      color: var(--coral);
+    }
+
+    /* Input consulta */
+    .input-wrapper {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    .input-consulta {
+      flex: 1;
+      padding: 14px 18px;
+      border: 1.5px solid var(--borde);
+      border-radius: 4px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      color: var(--texto);
+      background: white;
+      transition: border-color 0.2s;
+    }
+    .input-consulta:focus {
+      outline: none;
+      border-color: var(--azul);
+    }
+    .btn-consultar {
+      padding: 14px 24px;
+      background: var(--coral);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-family: 'Roboto Slab', serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .btn-consultar:hover { background: #e04030; }
+    .btn-consultar:disabled { background: var(--sutil); cursor: not-allowed; }
+
+    /* Estado cargando */
+    .estado-cargando {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 20px;
+      background: white;
+      border-radius: 4px;
+      margin-bottom: 24px;
+      border-left: 3px solid var(--coral);
+    }
+    .estado-cargando.visible { display: flex; }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid var(--borde);
+      border-top-color: var(--coral);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .estado-cargando span {
+      font-size: 13px;
+      color: var(--sutil);
+    }
+
+    /* Resultados */
+    #resultados { }
+
+    .respuesta-texto {
+      font-size: 14px;
+      color: var(--texto);
+      line-height: 1.7;
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      background: white;
+      border-radius: 4px;
+      border-left: 3px solid var(--azul);
+    }
+
+    .materiales-grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: 1fr;
+    }
+    .materiales-grid.comparativa {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    /* Tarjeta material */
+    .tarjeta {
+      background: white;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--borde);
+      animation: fadeUp 0.4s ease forwards;
+      opacity: 0;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .tarjeta-imagen {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background: var(--fondo);
+      display: block;
+    }
+    .tarjeta-imagen-placeholder {
+      width: 100%;
+      height: 120px;
+      background: linear-gradient(135deg, #e8e4de 0%, #d4cfc8 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--sutil);
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .tarjeta-body { padding: 20px; }
+
+    .tarjeta-familia {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--coral);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+    .tarjeta-nombre {
+      font-family: 'Roboto Slab', serif;
+      font-size: 20px;
+      color: var(--azul);
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+    .tarjeta-descripcion {
+      font-size: 13px;
+      color: var(--sutil);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .tarjeta-ficha {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .ficha-item { }
+    .ficha-label {
+      font-size: 9px;
+      font-weight: 500;
+      color: var(--sutil);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 3px;
+    }
+    .ficha-valor {
+      font-size: 12px;
+      color: var(--texto);
+      line-height: 1.4;
+    }
+
+    .tarjeta-sustentabilidad {
+      background: var(--fondo);
+      border-radius: 3px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+    .tarjeta-sustentabilidad .ficha-label { margin-bottom: 4px; }
+    .tarjeta-sustentabilidad .ficha-valor { font-size: 12px; color: var(--sutil); }
+
+    .tarjeta-fuente {
+      font-size: 10px;
+      color: var(--borde);
+      text-align: right;
+    }
+    .tarjeta-fuente.propia { color: var(--dorado); }
+
+    /* Aclaracion */
+    .aclaracion {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: #fffbf0;
+      border-left: 3px solid var(--dorado);
+      border-radius: 2px;
+      font-size: 12px;
+      color: #888;
+      line-height: 1.5;
+    }
+
+    /* ── CARGA ── */
+    .carga-intro {
+      margin-bottom: 28px;
+    }
+    .carga-intro h1 {
+      font-family: 'Roboto Slab', serif;
+      font-size: 22px;
+      color: var(--azul);
+      margin-bottom: 6px;
+    }
+    .carga-intro p {
+      font-size: 13px;
+      color: var(--sutil);
+      line-height: 1.6;
+    }
+    .carga-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 14px 28px;
+      background: var(--azul);
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-family: 'Roboto Slab', serif;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    .carga-link:hover { background: #1a2f5e; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--azul);
+      padding: 16px 20px;
+      text-align: center;
+    }
+    footer p {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 500px) {
+      .materiales-grid.comparativa { grid-template-columns: 1fr; }
+      .tarjeta-ficha { grid-template-columns: 1fr; }
+      .btn-consultar { padding: 14px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="header-marca">Materialoteca</div>
+    <div class="header-sub">Tecnología 2 · FAD UNCuyo</div>
+  </div>
+  <nav class="header-nav">
+    <button class="active" onclick="mostrarPantalla('consulta', this)">Consultar</button>
+    <button onclick="mostrarPantalla('carga', this)">Cargar</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ── PANTALLA CONSULTA ── -->
+  <div class="pantalla visible" id="pantalla-consulta">
+    <div class="consulta-intro">
+      <h1>¿Qué material necesitás?</h1>
+      <p>Preguntá sobre un material, describí para qué lo necesitás, o comparé entre opciones.</p>
+    </div>
+
+    <div class="sugerencias">
+      <button class="sugerencia" onclick="usarSugerencia(this)">¿Qué es el cartón corrugado?</button>
+      <button class="sugerencia" onclick="usarSugerencia(this)">Material rígido para packaging sustentable</button>
+      <button class="sugerencia" onclick="usarSugerencia(this)">Comparar cartón y PET</button>
+      <button class="sugerencia" onclick="usarSugerencia(this)">Material liviano para etiquetas</button>
+    </div>
+
+    <div class="input-wrapper">
+      <input type="text" class="input-consulta" id="input-consulta"
+        placeholder="Ej: necesito algo rígido y reciclable para una caja de producto..."
+        onkeydown="if(event.key==='Enter') consultar()">
+      <button class="btn-consultar" id="btn-consultar" onclick="consultar()">Consultar</button>
+    </div>
+
+    <div class="estado-cargando" id="estado-cargando">
+      <div class="spinner"></div>
+      <span>Consultando la materialoteca...</span>
+    </div>
+
+    <div id="resultados"></div>
+  </div>
+
+  <!-- ── PANTALLA CARGA ── -->
+  <div class="pantalla" id="pantalla-carga">
+    <div class="carga-intro">
+      <h1>Cargar un material</h1>
+      <p>Completá la ficha del material que analizaste en tu TPI. La cátedra revisará la información antes de que quede disponible en la materialoteca.</p>
+      <p style="margin-top: 10px;">Necesitás el código de acceso que te dio la cátedra.</p>
+      <a class="carga-link" href="carga.html">Ir al formulario de carga →</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>Materialoteca · Tecnología 2 – Insumos · FAD UNCuyo · 2026</p>
+</footer>
+
+<script>
+  const WEBHOOK_URL = "https://hook.us2.make.com/f3vh7pf8f7fg8qa7t4mw84upgomohqjm";
+
+  function mostrarPantalla(id, btn) {
+    document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('visible'));
+    document.getElementById('pantalla-' + id).classList.add('visible');
+    document.querySelectorAll('.header-nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function usarSugerencia(btn) {
+    document.getElementById('input-consulta').value = btn.textContent;
+    consultar();
+  }
+
+  async function consultar() {
+    const input = document.getElementById('input-consulta');
+    const consulta = input.value.trim();
+    if (!consulta) return;
+
+    const btn = document.getElementById('btn-consultar');
+    const cargando = document.getElementById('estado-cargando');
+    const resultados = document.getElementById('resultados');
+
+    btn.disabled = true;
+    cargando.classList.add('visible');
+    resultados.innerHTML = '';
+
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ consulta })
+      });
+
+      const texto = await res.text();
+
+      // Limpiar posibles backticks de markdown
+      const limpio = texto.replace(/```json|```/g, '').trim();
+      const data = JSON.parse(limpio);
+
+      renderizarRespuesta(data);
+
+    } catch (err) {
+      resultados.innerHTML = `
+        <div class="respuesta-texto" style="border-left-color: var(--coral)">
+          No se pudo conectar con la materialoteca. Revisá tu conexión e intentá de nuevo.
+        </div>`;
+    } finally {
+      btn.disabled = false;
+      cargando.classList.remove('visible');
+    }
+  }
+
+  function renderizarRespuesta(data) {
+    const resultados = document.getElementById('resultados');
+    let html = '';
+
+    if (data.respuesta_texto) {
+      html += `<div class="respuesta-texto">${data.respuesta_texto}</div>`;
+    }
+
+    if (data.materiales && data.materiales.length > 0) {
+      const esComparativa = data.tipo === 'comparativa' && data.materiales.length > 1;
+      html += `<div class="materiales-grid ${esComparativa ? 'comparativa' : ''}">`;
+
+      data.materiales.forEach((m, i) => {
+        const delay = i * 0.1;
+        html += `
+          <div class="tarjeta" style="animation-delay: ${delay}s">
+            ${m.imagen_url && !m.imagen_url.includes('example.com')
+              ? `<img class="tarjeta-imagen" src="${m.imagen_url}" alt="${m.nombre}" onerror="this.style.display='none'">`
+              : `<div class="tarjeta-imagen-placeholder">Sin imagen</div>`
+            }
+            <div class="tarjeta-body">
+              <div class="tarjeta-familia">${m.familia || ''}</div>
+              <div class="tarjeta-nombre">${m.nombre || ''}</div>
+              <div class="tarjeta-descripcion">${m.descripcion || ''}</div>
+
+              <div class="tarjeta-ficha">
+                ${m.propiedades_clave ? `
+                  <div class="ficha-item">
+                    <div class="ficha-label">Propiedades</div>
+                    <div class="ficha-valor">${m.propiedades_clave}</div>
+                  </div>` : ''}
+                ${m.usos ? `
+                  <div class="ficha-item">
+                    <div class="ficha-label">Usos en diseño</div>
+                    <div class="ficha-valor">${m.usos}</div>
+                  </div>` : ''}
+                ${m.ventajas ? `
+                  <div class="ficha-item">
+                    <div class="ficha-label">Ventajas</div>
+                    <div class="ficha-valor">${m.ventajas}</div>
+                  </div>` : ''}
+                ${m.limitaciones ? `
+                  <div class="ficha-item">
+                    <div class="ficha-label">Limitaciones</div>
+                    <div class="ficha-valor">${m.limitaciones}</div>
+                  </div>` : ''}
+              </div>
+
+              ${m.sustentabilidad ? `
+                <div class="tarjeta-sustentabilidad">
+                  <div class="ficha-label">Sustentabilidad</div>
+                  <div class="ficha-valor">${m.sustentabilidad}</div>
+                </div>` : ''}
+
+              <div class="tarjeta-fuente ${m.fuente === 'conocimiento_propio' ? 'propia' : ''}">
+                ${m.fuente === 'conocimiento_propio' ? '⚠ Información general · no analizada por ningún grupo' : '✓ Materialoteca FAD UNCuyo'}
+              </div>
+            </div>
+          </div>`;
+      });
+
+      html += '</div>';
+    }
+
+    if (data.aclaracion) {
+      html += `<div class="aclaracion">${data.aclaracion}</div>`;
+    }
+
+    resultados.innerHTML = html;
+  }
+
+  // PWA: registrar service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+</script>
+
+</body>
+</html>
