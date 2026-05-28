@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Materialoteca · Cargar material · Tecnología 2 FAD UNCuyo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --azul:   #132247;
+      --coral:  #ff5943;
+      --dorado: #EDC863;
+      --gris:   #BFBFBF;
+      --fondo:  #f4f2ee;
+      --blanco: #ffffff;
+      --texto:  #222222;
+      --sutil:  #888888;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: var(--fondo);
+      color: var(--texto);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--azul);
+      padding: 0 32px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header .marca {
+      font-family: 'Roboto Slab', serif;
+      font-weight: 700;
+      color: white;
+      font-size: 15px;
+      letter-spacing: 0.3px;
+    }
+    header .sub {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 300;
+      color: rgba(255,255,255,0.6);
+      font-size: 12px;
+    }
+
+    /* ── PANTALLA ACCESO ── */
+    #pantalla-acceso {
+      min-height: calc(100vh - 56px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .acceso-box {
+      background: white;
+      border-radius: 4px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 400px;
+      border-top: 4px solid var(--coral);
+      box-shadow: 0 2px 20px rgba(19,34,71,0.08);
+    }
+    .acceso-box h1 {
+      font-family: 'Roboto Slab', serif;
+      font-size: 22px;
+      color: var(--azul);
+      margin-bottom: 8px;
+    }
+    .acceso-box p {
+      font-size: 13px;
+      color: var(--sutil);
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+    .acceso-box .error {
+      background: #fff0ee;
+      border-left: 3px solid var(--coral);
+      color: var(--coral);
+      font-size: 13px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      border-radius: 2px;
+      display: none;
+    }
+
+    /* ── FORMULARIO PRINCIPAL ── */
+    #pantalla-formulario {
+      display: none;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    .form-titulo {
+      margin-bottom: 32px;
+    }
+    .form-titulo h1 {
+      font-family: 'Roboto Slab', serif;
+      font-size: 24px;
+      color: var(--azul);
+      margin-bottom: 6px;
+    }
+    .form-titulo p {
+      font-size: 13px;
+      color: var(--sutil);
+    }
+
+    /* Progreso */
+    .progreso {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 36px;
+    }
+    .progreso-paso {
+      height: 4px;
+      flex: 1;
+      background: var(--gris);
+      border-radius: 2px;
+      transition: background 0.3s;
+    }
+    .progreso-paso.activo { background: var(--coral); }
+    .progreso-paso.completo { background: var(--azul); }
+
+    /* Secciones */
+    .seccion {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .seccion.visible { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .seccion-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .seccion-num {
+      font-family: 'Roboto Slab', serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--coral);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    .seccion-titulo {
+      font-family: 'Roboto Slab', serif;
+      font-size: 18px;
+      color: var(--azul);
+    }
+
+    /* Campos */
+    .campo {
+      margin-bottom: 24px;
+    }
+    .campo label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--azul);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+    .campo label .req {
+      color: var(--coral);
+      margin-left: 2px;
+    }
+    .campo .ayuda {
+      font-size: 12px;
+      color: var(--sutil);
+      margin-bottom: 8px;
+      line-height: 1.5;
+      font-style: italic;
+    }
+    .campo input[type="text"],
+    .campo select,
+    .campo textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 3px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      color: var(--texto);
+      background: white;
+      transition: border-color 0.2s;
+      appearance: none;
+    }
+    .campo input[type="text"]:focus,
+    .campo select:focus,
+    .campo textarea:focus {
+      outline: none;
+      border-color: var(--azul);
+    }
+    .campo textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+    .campo select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    .fila-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .fila-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+    /* Upload imagen */
+    .upload-area {
+      border: 2px dashed var(--gris);
+      border-radius: 3px;
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: white;
+      position: relative;
+    }
+    .upload-area:hover { border-color: var(--azul); background: #f8f8ff; }
+    .upload-area.con-imagen { border-color: var(--azul); border-style: solid; }
+    .upload-area input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .upload-icono { font-size: 28px; margin-bottom: 8px; }
+    .upload-texto { font-size: 13px; color: var(--sutil); }
+    .upload-texto strong { color: var(--azul); }
+    .preview-img {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 2px;
+      display: none;
+      margin: 0 auto;
+    }
+
+    /* Navegación */
+    .nav-botones {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid #eee;
+    }
+    .btn {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 3px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .btn-primario {
+      background: var(--azul);
+      color: white;
+    }
+    .btn-primario:hover { background: #1a2f5e; }
+    .btn-secundario {
+      background: transparent;
+      color: var(--sutil);
+      border: 1.5px solid var(--gris);
+    }
+    .btn-secundario:hover { color: var(--azul); border-color: var(--azul); }
+    .btn-enviar {
+      background: var(--coral);
+      color: white;
+      padding: 12px 36px;
+    }
+    .btn-enviar:hover { background: #e04030; }
+    .btn-enviar:disabled { background: var(--gris); cursor: not-allowed; }
+
+    /* Input código */
+    .input-codigo {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid #ddd;
+      border-radius: 3px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 16px;
+      letter-spacing: 3px;
+      text-align: center;
+      text-transform: uppercase;
+      color: var(--azul);
+      margin-bottom: 16px;
+    }
+    .input-codigo:focus { outline: none; border-color: var(--azul); }
+    .btn-ingresar {
+      width: 100%;
+      padding: 14px;
+      background: var(--azul);
+      color: white;
+      border: none;
+      border-radius: 3px;
+      font-family: 'Roboto Slab', serif;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-ingresar:hover { background: #1a2f5e; }
+
+    /* Pantalla éxito */
+    #pantalla-exito {
+      display: none;
+      min-height: calc(100vh - 56px);
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .exito-box {
+      background: white;
+      border-radius: 4px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 480px;
+      text-align: center;
+      border-top: 4px solid var(--azul);
+      box-shadow: 0 2px 20px rgba(19,34,71,0.08);
+    }
+    .exito-icono { font-size: 48px; margin-bottom: 16px; }
+    .exito-box h2 {
+      font-family: 'Roboto Slab', serif;
+      color: var(--azul);
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+    .exito-box .id-generado {
+      display: inline-block;
+      background: var(--fondo);
+      border: 1px solid var(--gris);
+      border-radius: 3px;
+      padding: 8px 20px;
+      font-family: 'Roboto Slab', serif;
+      font-size: 20px;
+      color: var(--coral);
+      letter-spacing: 2px;
+      margin: 16px 0;
+    }
+    .exito-box p { font-size: 13px; color: var(--sutil); line-height: 1.6; }
+    .btn-nuevo {
+      margin-top: 24px;
+      padding: 12px 28px;
+      background: var(--azul);
+      color: white;
+      border: none;
+      border-radius: 3px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 600px) {
+      .fila-2, .fila-3 { grid-template-columns: 1fr; }
+      #pantalla-formulario { padding: 24px 16px 60px; }
+      .acceso-box, .exito-box { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="marca">Materialoteca</div>
+    <div class="sub">Tecnología 2 – Insumos · FAD UNCuyo</div>
+  </div>
+  <div class="sub">2026</div>
+</header>
+
+<!-- ── PANTALLA 1: ACCESO ── -->
+<div id="pantalla-acceso">
+  <div class="acceso-box">
+    <h1>Cargar material</h1>
+    <p>Ingresá el código de acceso que te dio la cátedra para poder cargar un nuevo material a la materialoteca.</p>
+    <div class="error" id="error-codigo">Código incorrecto. Verificá con la cátedra.</div>
+    <input type="text" class="input-codigo" id="campo-codigo" placeholder="TECNO2-2026" maxlength="20">
+    <button class="btn-ingresar" onclick="verificarCodigo()">Ingresar</button>
+  </div>
+</div>
+
+<!-- ── PANTALLA 2: FORMULARIO ── -->
+<div id="pantalla-formulario">
+  <div class="form-titulo">
+    <h1>Nuevo material</h1>
+    <p>Completá todos los campos. Los marcados con <span style="color:var(--coral)">*</span> son obligatorios.</p>
+  </div>
+
+  <div class="progreso" id="barra-progreso">
+    <div class="progreso-paso activo" id="paso-0"></div>
+    <div class="progreso-paso" id="paso-1"></div>
+    <div class="progreso-paso" id="paso-2"></div>
+    <div class="progreso-paso" id="paso-3"></div>
+    <div class="progreso-paso" id="paso-4"></div>
+    <div class="progreso-paso" id="paso-5"></div>
+  </div>
+
+  <!-- SECCIÓN 1 -->
+  <div class="seccion visible" id="sec-1">
+    <div class="seccion-header">
+      <span class="seccion-num">01 / 06</span>
+      <span class="seccion-titulo">Identificación y origen</span>
+    </div>
+
+    <div class="campo">
+      <label>Nombre del material <span class="req">*</span></label>
+      <div class="ayuda">Nombre común con el que se conoce el material. Ej: "Cartón corrugado", "PET transparente".</div>
+      <input type="text" id="nombre" placeholder="Ej: Cartón corrugado">
+    </div>
+
+    <div class="fila-2">
+      <div class="campo">
+        <label>Familia <span class="req">*</span></label>
+        <select id="familia">
+          <option value="">Seleccioná una familia</option>
+          <option>Celulósicos</option>
+          <option>Plásticos</option>
+          <option>Metales</option>
+          <option>Compuestos</option>
+          <option>Textiles</option>
+          <option>Biomateriales</option>
+          <option>Experimentales</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label>Subtipo / Clasificación <span class="req">*</span></label>
+        <input type="text" id="subtipo" placeholder="Ej: Cartón estructural">
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Composición</label>
+      <div class="ayuda">¿De qué está hecho? Si es un biomaterial, indicá la fuente biológica de origen.</div>
+      <input type="text" id="composicion" placeholder="Ej: Papel reciclado ondulado entre dos capas lisas">
+    </div>
+
+    <div class="campo">
+      <label>Origen</label>
+      <select id="origen">
+        <option value="">Seleccioná el origen</option>
+        <option>Natural</option>
+        <option>Sintético</option>
+        <option>Reciclado</option>
+        <option>Mixto</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 2 -->
+  <div class="seccion" id="sec-2">
+    <div class="seccion-header">
+      <span class="seccion-num">02 / 06</span>
+      <span class="seccion-titulo">Propiedades y procesos</span>
+    </div>
+
+    <div class="campo">
+      <label>Propiedades físicas</label>
+      <div class="ayuda">Peso, espesor, densidad, transparencia, color natural.</div>
+      <textarea id="prop-fisicas" placeholder="Ej: Liviano, espesor variable entre 3 y 7 mm, color marrón natural"></textarea>
+    </div>
+
+    <div class="campo">
+      <label>Propiedades mecánicas</label>
+      <div class="ayuda">Resistencia, rigidez, flexibilidad, resistencia al rasgado o compresión.</div>
+      <textarea id="prop-mecanicas" placeholder="Ej: Buena resistencia a la compresión, baja resistencia al rasgado"></textarea>
+    </div>
+
+    <div class="campo">
+      <label>Propiedades perceptuales</label>
+      <div class="ayuda">Textura, temperatura al tacto, sonido, olor, apariencia visual.</div>
+      <textarea id="prop-perceptuales" placeholder="Ej: Textura rugosa, sonido hueco al golpear, aspecto artesanal"></textarea>
+    </div>
+
+    <div class="campo">
+      <label>Procesos</label>
+      <div class="ayuda">Incluí tanto el proceso de fabricación del material como los procesos de transformación en diseño (corte, plegado, impresión, etc.).</div>
+      <textarea id="procesos" placeholder="Ej: Fabricado por laminado y ondulado. Se puede cortar, troquelar y plegar. Admite impresión flexográfica."></textarea>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 3 -->
+  <div class="seccion" id="sec-3">
+    <div class="seccion-header">
+      <span class="seccion-num">03 / 06</span>
+      <span class="seccion-titulo">Uso y evaluación</span>
+    </div>
+
+    <div class="campo">
+      <label>Usos en diseño</label>
+      <div class="ayuda">¿Para qué se usa este material en proyectos de diseño gráfico?</div>
+      <textarea id="usos" placeholder="Ej: Packaging, embalaje, soporte para presentaciones, señalética temporal"></textarea>
+    </div>
+
+    <div class="campo">
+      <label>Ejemplos reales</label>
+      <div class="ayuda">Productos concretos donde aparece este material.</div>
+      <textarea id="ejemplos" placeholder="Ej: Cajas de pizza, embalaje de electrodomésticos, displays de puntos de venta"></textarea>
+    </div>
+
+    <div class="fila-2">
+      <div class="campo">
+        <label>Ventajas</label>
+        <textarea id="ventajas" placeholder="Ej: Bajo costo, liviano, reciclable, fácil de trabajar"></textarea>
+      </div>
+      <div class="campo">
+        <label>Limitaciones</label>
+        <textarea id="limitaciones" placeholder="Ej: Sensible a la humedad, no apto para exteriores prolongados"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 4 -->
+  <div class="seccion" id="sec-4">
+    <div class="seccion-header">
+      <span class="seccion-num">04 / 06</span>
+      <span class="seccion-titulo">Sustentabilidad y contexto</span>
+    </div>
+
+    <div class="fila-3">
+      <div class="campo">
+        <label>Reciclabilidad</label>
+        <select id="reciclabilidad">
+          <option value="">Seleccioná</option>
+          <option>Alta</option>
+          <option>Media</option>
+          <option>Baja</option>
+          <option>No reciclable</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label>Reutilización</label>
+        <select id="reutilizacion">
+          <option value="">Seleccioná</option>
+          <option>Sí</option>
+          <option>Parcial</option>
+          <option>No</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label>Costo relativo</label>
+        <select id="costo">
+          <option value="">Seleccioná</option>
+          <option>Bajo</option>
+          <option>Medio</option>
+          <option>Alto</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Impacto ambiental</label>
+      <div class="ayuda">¿Qué impacto tiene la producción, uso y descarte de este material?</div>
+      <textarea id="impacto" placeholder="Ej: Bajo impacto si es de origen reciclado. La producción consume agua y energía en el proceso de pulpado."></textarea>
+    </div>
+
+    <div class="campo">
+      <label>Disponibilidad local</label>
+      <div class="ayuda">¿Se consigue fácilmente en Mendoza? ¿En qué tipo de comercios?</div>
+      <input type="text" id="disponibilidad" placeholder="Ej: Alta. Disponible en papelerías, imprentas y distribuidores mayoristas.">
+    </div>
+  </div>
+
+  <!-- SECCIÓN 5 -->
+  <div class="seccion" id="sec-5">
+    <div class="seccion-header">
+      <span class="seccion-num">05 / 06</span>
+      <span class="seccion-titulo">Para el bot e imagen</span>
+    </div>
+
+    <div class="campo">
+      <label>Descripción simple</label>
+      <div class="ayuda">Una o dos oraciones que expliquen qué es este material, como si se lo explicaras a alguien que nunca lo vio.</div>
+      <textarea id="descripcion" placeholder="Ej: Material estructural liviano formado por una capa ondulada entre dos capas lisas de papel, usado principalmente en embalaje."></textarea>
+    </div>
+
+    <div class="campo">
+      <label>Preguntas frecuentes</label>
+      <div class="ayuda">Preguntas que suelen hacerse sobre este material y sus respuestas. Separá cada par con una línea en blanco.</div>
+      <textarea id="faq" style="min-height: 120px" placeholder="¿Se puede imprimir directamente? Sí, con impresión flexográfica o digital UV.&#10;&#10;¿Resiste peso? Depende del gramaje y la dirección de la corrugación."></textarea>
+    </div>
+
+    <div class="campo">
+      <label>Comparación con materiales similares</label>
+      <div class="ayuda">¿En qué se diferencia de otros materiales parecidos?</div>
+      <textarea id="comparacion" placeholder="Ej: Más rígido que la cartulina pero más liviano que el cartón gris. Menos resistente a la humedad que el plástico corrugado."></textarea>
+    </div>
+
+    <div class="campo">
+      <label>Imagen del material</label>
+      <div class="ayuda">Foto del material en estado natural o aplicado. JPG o PNG, máx. 5 MB.</div>
+      <div class="upload-area" id="upload-area" onclick="document.getElementById('campo-imagen').click()">
+        <input type="file" id="campo-imagen" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="previsualizarImagen(event)">
+        <img class="preview-img" id="preview-img" alt="Preview">
+        <div id="upload-placeholder">
+          <div class="upload-icono">📎</div>
+          <div class="upload-texto"><strong>Hacé clic para subir una imagen</strong><br>JPG, PNG o WEBP · máx. 5 MB</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 6 -->
+  <div class="seccion" id="sec-6">
+    <div class="seccion-header">
+      <span class="seccion-num">06 / 06</span>
+      <span class="seccion-titulo">Cierre</span>
+    </div>
+
+    <div class="campo">
+      <label>Fuente bibliográfica</label>
+      <div class="ayuda">Libros, sitios, fichas técnicas o cualquier fuente que usaron para completar la ficha.</div>
+      <textarea id="fuente" placeholder="Ej: INTI – Ficha técnica cartón corrugado 2023. ashford.com.ar/materiales"></textarea>
+    </div>
+
+    <div class="fila-2">
+      <div class="campo">
+        <label>Autor / Grupo <span class="req">*</span></label>
+        <input type="text" id="autor" placeholder="Ej: Grupo 3 – López, Martínez, Pérez">
+      </div>
+      <div class="campo">
+        <label>Cohorte</label>
+        <input type="text" id="cohorte" value="2026" readonly style="background:#f4f2ee; color: var(--sutil)">
+      </div>
+    </div>
+
+    <div class="campo" style="background: #f8f6f2; border-left: 3px solid var(--dorado); padding: 16px; border-radius: 2px;">
+      <p style="font-size: 13px; color: var(--sutil); line-height: 1.6;">
+        Una vez enviada, la ficha queda en estado <strong>En revisión</strong>. La cátedra la revisará y cambiará el estado a <strong>Aprobado</strong> o pedirá correcciones.
+      </p>
+    </div>
+  </div>
+
+  <!-- NAVEGACIÓN -->
+  <div class="nav-botones">
+    <button class="btn btn-secundario" id="btn-anterior" onclick="anterior()" style="display:none">← Anterior</button>
+    <span></span>
+    <button class="btn btn-primario" id="btn-siguiente" onclick="siguiente()">Siguiente →</button>
+    <button class="btn btn-enviar" id="btn-enviar" onclick="enviarFormulario()" style="display:none">Enviar material</button>
+  </div>
+</div>
+
+<!-- ── PANTALLA 3: ÉXITO ── -->
+<div id="pantalla-exito" style="display:none; min-height: calc(100vh - 56px); align-items:center; justify-content:center; padding:40px 20px;">
+  <div class="exito-box">
+    <div class="exito-icono">✅</div>
+    <h2>Material cargado</h2>
+    <div class="id-generado" id="id-generado">—</div>
+    <p>La ficha quedó registrada en la materialoteca con estado <strong>En revisión</strong>.<br>La cátedra la revisará y te avisará si hay correcciones.</p>
+    <button class="btn-nuevo" onclick="reiniciar()">Cargar otro material</button>
+  </div>
+</div>
+
+<script>
+  // ── CONFIG ──
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwH8VJm3SekuHYJ-eGUInwFpRqKyfsKE96I9k6yZnYxaiHjDVJE2hGPI-sO22vZSYxu/exec";
+  const CODIGO_VALIDO   = "TECNO2-2026";
+
+  let seccionActual = 1;
+  const totalSecciones = 6;
+  let imagenBase64 = null;
+  let imagenNombre = null;
+
+  // ── ACCESO ──
+  document.getElementById('campo-codigo').addEventListener('keydown', e => {
+    if (e.key === 'Enter') verificarCodigo();
+  });
+
+  function verificarCodigo() {
+    const codigo = document.getElementById('campo-codigo').value.trim().toUpperCase();
+    const err = document.getElementById('error-codigo');
+    if (codigo === CODIGO_VALIDO) {
+      document.getElementById('pantalla-acceso').style.display = 'none';
+      document.getElementById('pantalla-formulario').style.display = 'block';
+      actualizarProgreso();
+    } else {
+      err.style.display = 'block';
+      document.getElementById('campo-codigo').focus();
+    }
+  }
+
+  // ── NAVEGACIÓN ──
+  function siguiente() {
+    if (!validarSeccion(seccionActual)) return;
+    if (seccionActual < totalSecciones) {
+      mostrarSeccion(seccionActual + 1);
+    }
+  }
+
+  function anterior() {
+    if (seccionActual > 1) mostrarSeccion(seccionActual - 1);
+  }
+
+  function mostrarSeccion(n) {
+    document.getElementById(`sec-${seccionActual}`).classList.remove('visible');
+    seccionActual = n;
+    document.getElementById(`sec-${seccionActual}`).classList.add('visible');
+    actualizarBotones();
+    actualizarProgreso();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function actualizarBotones() {
+    const btnAnt = document.getElementById('btn-anterior');
+    const btnSig = document.getElementById('btn-siguiente');
+    const btnEnv = document.getElementById('btn-enviar');
+    btnAnt.style.display = seccionActual > 1 ? 'block' : 'none';
+    btnSig.style.display = seccionActual < totalSecciones ? 'block' : 'none';
+    btnEnv.style.display = seccionActual === totalSecciones ? 'block' : 'none';
+  }
+
+  function actualizarProgreso() {
+    for (let i = 0; i < totalSecciones; i++) {
+      const paso = document.getElementById(`paso-${i}`);
+      if (i < seccionActual - 1) {
+        paso.className = 'progreso-paso completo';
+      } else if (i === seccionActual - 1) {
+        paso.className = 'progreso-paso activo';
+      } else {
+        paso.className = 'progreso-paso';
+      }
+    }
+  }
+
+  // ── VALIDACIÓN ──
+  function validarSeccion(n) {
+    if (n === 1) {
+      const nombre = document.getElementById('nombre').value.trim();
+      const familia = document.getElementById('familia').value;
+      const subtipo = document.getElementById('subtipo').value.trim();
+      if (!nombre) { alerta('nombre', 'El nombre del material es obligatorio.'); return false; }
+      if (!familia) { alerta('familia', 'Seleccioná una familia.'); return false; }
+      if (!subtipo) { alerta('subtipo', 'El subtipo es obligatorio.'); return false; }
+    }
+    if (n === 6) {
+      const autor = document.getElementById('autor').value.trim();
+      if (!autor) { alerta('autor', 'Indicá el autor o grupo.'); return false; }
+    }
+    return true;
+  }
+
+  function alerta(id, msg) {
+    const campo = document.getElementById(id);
+    campo.style.borderColor = 'var(--coral)';
+    campo.focus();
+    setTimeout(() => campo.style.borderColor = '', 2000);
+  }
+
+  // ── IMAGEN ──
+  function previsualizarImagen(event) {
+    const archivo = event.target.files[0];
+    if (!archivo) return;
+    if (archivo.size > 5 * 1024 * 1024) {
+      alert('La imagen no puede superar 5 MB.');
+      return;
+    }
+    imagenNombre = archivo.name;
+    const reader = new FileReader();
+    reader.onload = e => {
+      imagenBase64 = e.target.result;
+      const preview = document.getElementById('preview-img');
+      const placeholder = document.getElementById('upload-placeholder');
+      preview.src = imagenBase64;
+      preview.style.display = 'block';
+      placeholder.style.display = 'none';
+      document.getElementById('upload-area').classList.add('con-imagen');
+    };
+    reader.readAsDataURL(archivo);
+  }
+
+  // ── ENVÍO ──
+  async function enviarFormulario() {
+    if (!validarSeccion(6)) return;
+
+    const btn = document.getElementById('btn-enviar');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Enviando...';
+
+    const datos = {
+      codigo:                              CODIGO_VALIDO,
+      "Nombre del material":               document.getElementById('nombre').value.trim(),
+      "Familia":                           document.getElementById('familia').value,
+      "Subtipo / Clasificación":           document.getElementById('subtipo').value.trim(),
+      "Composición":                       document.getElementById('composicion').value.trim(),
+      "Origen":                            document.getElementById('origen').value,
+      "Propiedades físicas":               document.getElementById('prop-fisicas').value.trim(),
+      "Propiedades mecánicas":             document.getElementById('prop-mecanicas').value.trim(),
+      "Propiedades perceptuales":          document.getElementById('prop-perceptuales').value.trim(),
+      "Procesos":                          document.getElementById('procesos').value.trim(),
+      "Usos en diseño":                    document.getElementById('usos').value.trim(),
+      "Ejemplos reales":                   document.getElementById('ejemplos').value.trim(),
+      "Ventajas":                          document.getElementById('ventajas').value.trim(),
+      "Limitaciones":                      document.getElementById('limitaciones').value.trim(),
+      "Reciclabilidad":                    document.getElementById('reciclabilidad').value,
+      "Impacto ambiental":                 document.getElementById('impacto').value.trim(),
+      "Reutilización":                     document.getElementById('reutilizacion').value,
+      "Disponibilidad local":              document.getElementById('disponibilidad').value.trim(),
+      "Costo relativo":                    document.getElementById('costo').value,
+      "Descripción simple":                document.getElementById('descripcion').value.trim(),
+      "Preguntas frecuentes":              document.getElementById('faq').value.trim(),
+      "Comparación con materiales similares": document.getElementById('comparacion').value.trim(),
+      "Fuente bibliográfica":              document.getElementById('fuente').value.trim(),
+      "Autor / Grupo":                     document.getElementById('autor').value.trim(),
+      "Cohorte":                           "2026",
+      imagen_base64:                       imagenBase64,
+      imagen_nombre:                       imagenNombre
+    };
+
+    try {
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      });
+      const json = await res.json();
+      if (json.ok) {
+        document.getElementById('id-generado').textContent = json.id || '—';
+        document.getElementById('pantalla-formulario').style.display = 'none';
+        document.getElementById('pantalla-exito').style.display = 'flex';
+      } else {
+        alert('Error: ' + json.mensaje);
+        btn.disabled = false;
+        btn.innerHTML = 'Enviar material';
+      }
+    } catch (err) {
+      alert('No se pudo conectar con el servidor. Revisá tu conexión.');
+      btn.disabled = false;
+      btn.innerHTML = 'Enviar material';
+    }
+  }
+
+  // ── REINICIO ──
+  function reiniciar() {
+    location.reload();
+  }
+</script>
+
+</body>
+</html>
