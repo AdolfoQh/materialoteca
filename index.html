@@ -453,11 +453,7 @@
     resultados.innerHTML = '';
 
     try {
-      const res = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ consulta })
-      });
+      const res = await fetch(WEBHOOK_URL + '?consulta=' + encodeURIComponent(consulta));
 
       const texto = await res.text();
 
