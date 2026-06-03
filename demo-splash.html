@@ -14,18 +14,14 @@
       font-family: 'Orbitron', sans-serif;
     }
 
-    /* Fondo — más grande que la pantalla para poder moverlo */
+    /* Fondo */
     .fondo {
       position: fixed;
-      width: 130vw;
-      height: 130vh;
-      top: -15vh;
-      left: -15vw;
+      inset: 0;
       background-image: url('fondo.png');
-      background-size: cover;
-      background-position: center;
-      transition: transform 0.3s ease-out;
-      will-change: transform;
+      background-size: 120%;
+      background-position: 50% 50%;
+      transition: background-position 0.2s ease-out;
     }
 
     /* Texto */
@@ -225,10 +221,11 @@
 
     // Giroscopio
     function aplicarMovimiento(x, y) {
-      const mx = Math.max(-MAX_MOVE, Math.min(MAX_MOVE, x));
-      const my = Math.max(-MAX_MOVE, Math.min(MAX_MOVE, y));
-      fondo.style.transform = `translate(${mx}px, ${my}px)`;
-      fondoOrbe.style.transform = `translate(${mx * 0.3}px, ${my * 0.3}px) scale(1.1)`;
+      const mx = Math.max(-1, Math.min(1, x / MAX_MOVE));
+      const my = Math.max(-1, Math.min(1, y / MAX_MOVE));
+      const bpx = 50 + mx * 15;
+      const bpy = 50 + my * 15;
+      fondo.style.backgroundPosition = `${bpx}% ${bpy}%`;
     }
 
     if (window.DeviceOrientationEvent) {
