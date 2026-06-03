@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { margin:0; padding:0; }
+body { overflow:hidden; }
+#fondo {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #5ECFCF 0%, #E8DDD0 40%, #B5604A 100%);
+  background-size: 200% 200%;
+  background-position: 50% 50%;
+  transition: background-position 0.1s ease-out;
+}
+#debug {
+  position: fixed;
+  top: 20px; left: 20px;
+  color: black;
+  font-size: 14px;
+  z-index: 99;
+  background: rgba(255,255,255,0.7);
+  padding: 8px;
+  border-radius: 4px;
+}
+</style>
+</head>
+<body>
+<div id="fondo"></div>
+<div id="debug">mové el mouse...</div>
+<script>
+const fondo = document.getElementById("fondo");
+const debug = document.getElementById("debug");
+
+document.addEventListener("mousemove", function(e) {
+  const x = (e.clientX / window.innerWidth) * 100;
+  const y = (e.clientY / window.innerHeight) * 100;
+  fondo.style.backgroundPosition = x + "% " + y + "%";
+  debug.textContent = "x:" + Math.round(x) + " y:" + Math.round(y);
+});
+
+window.addEventListener("deviceorientation", function(e) {
+  const x = 50 + (e.gamma || 0);
+  const y = 50 + (e.beta || 0) * 0.5;
+  fondo.style.backgroundPosition = x + "% " + y + "%";
+  debug.textContent = "gamma:" + Math.round(e.gamma) + " beta:" + Math.round(e.beta);
+});
+</script>
+</body>
+</html>
