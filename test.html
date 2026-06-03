@@ -23,27 +23,63 @@ body { overflow:hidden; }
   padding: 8px;
   border-radius: 4px;
 }
+#btn-permiso {
+  position: fixed;
+  bottom: 40px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 99;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 30px;
+  font-size: 14px;
+  display: none;
+}
 </style>
 </head>
 <body>
 <div id="fondo"></div>
-<div id="debug">mové el mouse...</div>
+<div id="debug">mové el mouse o incliná el celu</div>
+<button id="btn-permiso" onclick="pedirPermiso()">Activar giroscopio</button>
 <script>
 const fondo = document.getElementById("fondo");
 const debug = document.getElementById("debug");
+const btn = document.getElementById("btn-permiso");
 
+function activarGiro() {
+  window.addEventListener("deviceorientation", function(e) {
+    if (e.gamma === null) return;
+    const x = 50 + (e.gamma * 1.2);
+    const y = 50 + ((e.beta - 45) * 0.8);
+    fondo.style.backgroundPosition = x + "% " + y + "%";
+    debug.textContent = "gamma:" + Math.round(e.gamma) + " beta:" + Math.round(e.beta);
+  });
+}
+
+function pedirPermiso() {
+  DeviceOrientationEvent.requestPermission().then(function(state) {
+    if (state === "granted") {
+      btn.style.display = "none";
+      activarGiro();
+    }
+  }).catch(console.error);
+}
+
+// iOS 13+
+if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
+  btn.style.display = "block";
+} else if (window.DeviceOrientationEvent) {
+  // Android y otros
+  activarGiro();
+}
+
+// Desktop
 document.addEventListener("mousemove", function(e) {
   const x = (e.clientX / window.innerWidth) * 100;
   const y = (e.clientY / window.innerHeight) * 100;
   fondo.style.backgroundPosition = x + "% " + y + "%";
   debug.textContent = "x:" + Math.round(x) + " y:" + Math.round(y);
-});
-
-window.addEventListener("deviceorientation", function(e) {
-  const x = 50 + (e.gamma || 0);
-  const y = 50 + (e.beta || 0) * 0.5;
-  fondo.style.backgroundPosition = x + "% " + y + "%";
-  debug.textContent = "gamma:" + Math.round(e.gamma) + " beta:" + Math.round(e.beta);
 });
 </script>
 </body>
