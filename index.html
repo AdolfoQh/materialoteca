@@ -425,7 +425,7 @@
 </footer>
 
 <script>
-  const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzC7OdC5ExvFJr-_JjYmXjT-3xKEamQAgRfgB-yHw-Wsnwb8WDr_EmV-giCdiHGXtA/exec";
+  const WEBHOOK_URL = "https://hook.us2.make.com/392fxop8y8e96oa4xm6anrjb1sgymhja";
 
   function mostrarPantalla(id, btn) {
     document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('visible'));
@@ -455,7 +455,7 @@
     try {
       const res = await fetch(WEBHOOK_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({ consulta })
       });
 
