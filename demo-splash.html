@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Materialoteca</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    /* Fondo — más grande que la pantalla para poder moverlo */
+    .fondo {
+      position: fixed;
+      width: 130vw;
+      height: 130vh;
+      top: -15vh;
+      left: -15vw;
+      background-image: url('fondo.png');
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.3s ease-out;
+      will-change: transform;
+    }
+
+    /* Texto */
+    .texto-splash {
+      position: fixed;
+      bottom: 16%;
+      left: 0; right: 0;
+      text-align: center;
+      z-index: 20;
+      transition: opacity 0.5s ease, transform 0.8s ease;
+    }
+    .texto-splash.oculto {
+      opacity: 0;
+      transform: translateY(-20px);
+      pointer-events: none;
+    }
+    .texto-splash h1 {
+      font-size: 40px;
+      font-weight: 700;
+      color: #1a0e0a;
+      letter-spacing: -1px;
+      animation: textFloat 6s ease-in-out infinite;
+    }
+    .texto-splash p {
+      margin-top: 10px;
+      font-size: 9px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(26,14,10,0.45);
+    }
+    @keyframes textFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Hint */
+    .hint {
+      position: fixed;
+      bottom: 36px;
+      left: 0; right: 0;
+      text-align: center;
+      z-index: 20;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(26,14,10,0.35);
+      animation: pulso 2.5s ease-in-out infinite;
+      transition: opacity 0.5s ease;
+    }
+    .hint.oculto { opacity: 0; pointer-events: none; }
+    @keyframes pulso {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+
+    /* Orbe contraído */
+    .orbe {
+      position: fixed;
+      top: 35px;
+      left: 50%;
+      transform: translateX(-50%) scale(0);
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      overflow: hidden;
+      z-index: 15;
+      box-shadow:
+        0 0 0 2px rgba(255,255,255,0.2),
+        0 0 30px rgba(94,207,207,0.5),
+        0 0 70px rgba(94,207,207,0.2);
+      transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .orbe.visible {
+      transform: translateX(-50%) scale(1);
+    }
+    .orbe .fondo-orbe {
+      width: 100%;
+      height: 100%;
+      background-image: url('fondo.png');
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.3s ease-out;
+    }
+
+    /* Interfaz */
+    .interfaz {
+      position: fixed;
+      top: 170px;
+      left: 0; right: 0; bottom: 0;
+      padding: 20px 24px 0;
+      overflow-y: auto;
+      opacity: 0;
+      transform: translateY(30px);
+      pointer-events: none;
+      transition: opacity 0.7s ease 0.5s, transform 0.7s ease 0.5s;
+      z-index: 10;
+    }
+    .interfaz.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+    }
+
+    .nombre-orbe {
+      text-align: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: rgba(26,14,10,0.4);
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      opacity: 0;
+      transition: opacity 0.5s ease 0.9s;
+    }
+    .nombre-orbe.visible { opacity: 1; }
+
+    .buscador-wrap {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .buscador {
+      flex: 1;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.7);
+      border-radius: 4px;
+      padding: 14px 16px;
+      color: #1a0e0a;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      outline: none;
+      backdrop-filter: blur(10px);
+    }
+    .buscador::placeholder { color: rgba(26,14,10,0.4); }
+    .btn-buscar {
+      background: rgba(26,14,10,0.75);
+      border: none;
+      border-radius: 4px;
+      padding: 14px 18px;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+    .sugerencias {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .sugerencia {
+      background: rgba(255,255,255,0.35);
+      border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 12px;
+      color: rgba(26,14,10,0.7);
+      font-family: 'Roboto', sans-serif;
+      backdrop-filter: blur(8px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="fondo" id="fondo"></div>
+
+  <div class="orbe" id="orbe">
+    <div class="fondo-orbe" id="fondo-orbe"></div>
+  </div>
+
+  <div class="texto-splash" id="texto-splash">
+    <h1>materialoteca</h1>
+    <p>FAD – UNCUYO</p>
+  </div>
+
+  <div class="hint" id="hint">doble tap para entrar</div>
+
+  <div class="interfaz" id="interfaz">
+    <div class="nombre-orbe" id="nombre-orbe">materialoteca · FAD UNCUYO</div>
+    <div class="buscador-wrap">
+      <input class="buscador" type="text" placeholder="¿Qué material necesitás?">
+      <button class="btn-buscar">Consultar</button>
+    </div>
+    <div class="sugerencias">
+      <div class="sugerencia">¿Qué es el cartón corrugado?</div>
+      <div class="sugerencia">Material rígido y reciclable</div>
+      <div class="sugerencia">Comparar cartón y PET</div>
+      <div class="sugerencia">Material liviano para etiquetas</div>
+    </div>
+  </div>
+
+  <script>
+    const fondo = document.getElementById('fondo');
+    const fondoOrbe = document.getElementById('fondo-orbe');
+    const MAX_MOVE = 50; // px máximo de desplazamiento
+
+    // Giroscopio
+    function aplicarMovimiento(x, y) {
+      const mx = Math.max(-MAX_MOVE, Math.min(MAX_MOVE, x));
+      const my = Math.max(-MAX_MOVE, Math.min(MAX_MOVE, y));
+      fondo.style.transform = `translate(${mx}px, ${my}px)`;
+      fondoOrbe.style.transform = `translate(${mx * 0.3}px, ${my * 0.3}px) scale(1.1)`;
+    }
+
+    if (window.DeviceOrientationEvent) {
+      // iOS 13+ requiere permiso
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        document.addEventListener('dblclick', () => {
+          DeviceOrientationEvent.requestPermission().then(state => {
+            if (state === 'granted') activarGiroscopio();
+          });
+        }, { once: true });
+      } else {
+        activarGiroscopio();
+      }
+    }
+
+    function activarGiroscopio() {
+      window.addEventListener('deviceorientation', (e) => {
+        const x = (e.gamma || 0) * 0.8; // inclinación izq/der
+        const y = (e.beta  || 0) * 0.5; // inclinación adelante/atrás
+        aplicarMovimiento(x, y);
+      });
+    }
+
+    // Mouse (desktop)
+    document.addEventListener('mousemove', (e) => {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      const x = ((e.clientX - cx) / cx) * MAX_MOVE;
+      const y = ((e.clientY - cy) / cy) * MAX_MOVE;
+      aplicarMovimiento(x, y);
+    });
+
+    // Doble tap / doble click → abrir
+    let lastTap = 0;
+    let abierto = false;
+
+    function abrir() {
+      if (abierto) return;
+      abierto = true;
+      document.getElementById('orbe').classList.add('visible');
+      document.getElementById('texto-splash').classList.add('oculto');
+      document.getElementById('hint').classList.add('oculto');
+      setTimeout(() => {
+        document.getElementById('interfaz').classList.add('visible');
+        document.getElementById('nombre-orbe').classList.add('visible');
+      }, 400);
+    }
+
+    document.addEventListener('touchend', (e) => {
+      const now = Date.now();
+      if (now - lastTap < 300) abrir();
+      lastTap = now;
+    });
+
+    document.addEventListener('dblclick', abrir);
+  </script>
+
+</body>
+</html>
