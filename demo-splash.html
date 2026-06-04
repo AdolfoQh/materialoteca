@@ -10,11 +10,14 @@ body { overflow:hidden; min-height:100vh; }
 
 #fondo {
   position: fixed;
-  inset: 0;
+  width: 150vw;
+  height: 150vh;
+  top: -25vh;
+  left: -25vw;
   background-image: url("fondo.png");
-  background-size: 200% 200%;
-  background-position: 50% 50%;
-  transition: background-position 0.1s ease-out;
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
 }
 
 .texto-splash {
@@ -31,10 +34,8 @@ body { overflow:hidden; min-height:100vh; }
   animation: float 6s ease-in-out infinite;
 }
 .texto-splash p {
-  margin-top: 10px;
-  font-family: Orbitron, sans-serif;
-  font-size: 9px; letter-spacing: 4px;
-  text-transform: uppercase;
+  margin-top: 10px; font-family: Orbitron, sans-serif;
+  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
   color: rgba(26,14,10,0.45);
 }
 @keyframes float {
@@ -45,8 +46,8 @@ body { overflow:hidden; min-height:100vh; }
 .hint {
   position: fixed; bottom: 36px; left: 0; right: 0;
   text-align: center; z-index: 20;
-  font-family: Orbitron, sans-serif;
-  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  font-family: Orbitron, sans-serif; font-size: 9px;
+  letter-spacing: 3px; text-transform: uppercase;
   color: rgba(26,14,10,0.35);
   animation: pulso 2.5s ease-in-out infinite;
   transition: opacity 0.5s ease;
@@ -56,8 +57,7 @@ body { overflow:hidden; min-height:100vh; }
 
 #btn-giro {
   position: fixed; bottom: 80px; left: 50%;
-  transform: translateX(-50%);
-  z-index: 99;
+  transform: translateX(-50%); z-index: 99;
   background: rgba(26,14,10,0.5); color: white;
   border: none; padding: 12px 24px; border-radius: 30px;
   font-family: Orbitron, sans-serif; font-size: 9px;
@@ -73,13 +73,7 @@ body { overflow:hidden; min-height:100vh; }
   transition: transform 0.9s cubic-bezier(0.4,0,0.2,1);
 }
 .orbe.visible { transform: translateX(-50%) scale(1); }
-.orbe-fondo {
-  width:100%; height:100%;
-  background-image: url("fondo.png");
-  background-size: 200% 200%;
-  background-position: 50% 50%;
-  transition: background-position 0.1s ease-out;
-}
+.orbe img { width:100%; height:100%; object-fit:cover; }
 
 .interfaz {
   position: fixed; top: 170px; left: 0; right: 0; bottom: 0;
@@ -118,13 +112,18 @@ body { overflow:hidden; min-height:100vh; }
 </head>
 <body>
 <div id="fondo"></div>
-<div class="orbe" id="orbe"><div class="orbe-fondo" id="orbe-fondo"></div></div>
+
+<div class="orbe" id="orbe">
+  <img src="fondo.png" alt="">
+</div>
+
 <div class="texto-splash" id="texto-splash">
   <h1>materialoteca</h1>
   <p>FAD – UNCUYO</p>
 </div>
 <div class="hint" id="hint">doble tap para entrar</div>
 <button id="btn-giro" onclick="pedirPermiso()">activar movimiento</button>
+
 <div class="interfaz" id="interfaz">
   <div class="nombre-orbe" id="nombre-orbe">materialoteca · FAD UNCUYO</div>
   <div class="buscador-wrap">
@@ -141,27 +140,27 @@ body { overflow:hidden; min-height:100vh; }
 
 <script>
 const fondo = document.getElementById("fondo");
-const orbeFondo = document.getElementById("orbe-fondo");
+const MAX = 40;
 
-function mover(x, y) {
-  fondo.style.backgroundPosition = x + "% " + y + "%";
-  orbeFondo.style.backgroundPosition = (100-x) + "% " + (100-y) + "%";
+function mover(px, py) {
+  // px, py: porcentaje 0-100 de posición del mouse/giro
+  const mx = ((px / 100) - 0.5) * MAX * 2;
+  const my = ((py / 100) - 0.5) * MAX * 2;
+  fondo.style.transform = "translate(" + mx + "px, " + my + "px)";
 }
 
-// Desktop — mismo approach que test.html
 document.addEventListener("mousemove", function(e) {
-  const x = (e.clientX / window.innerWidth) * 100;
-  const y = (e.clientY / window.innerHeight) * 100;
-  mover(x, y);
+  const px = (e.clientX / window.innerWidth) * 100;
+  const py = (e.clientY / window.innerHeight) * 100;
+  mover(px, py);
 });
 
-// Giroscopio — mismo approach que test.html
 function activarGiro() {
   window.addEventListener("deviceorientation", function(e) {
     if (e.gamma === null) return;
-    const x = 50 + (e.gamma * 1.2);
-    const y = 50 + ((e.beta - 45) * 0.8);
-    mover(Math.max(0,Math.min(100,x)), Math.max(0,Math.min(100,y)));
+    const px = Math.max(0, Math.min(100, 50 + e.gamma * 1.5));
+    const py = Math.max(0, Math.min(100, 50 + (e.beta - 45) * 1.0));
+    mover(px, py);
   });
 }
 
@@ -180,7 +179,6 @@ if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEve
   activarGiro();
 }
 
-// Doble tap / click
 let lastTap = 0, abierto = false;
 function abrir() {
   if (abierto) return; abierto = true;
