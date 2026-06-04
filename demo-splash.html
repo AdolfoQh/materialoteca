@@ -6,37 +6,34 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { overflow:hidden; min-height:100vh; font-family: Orbitron, sans-serif; }
+body { overflow:hidden; min-height:100vh; }
 
 #fondo {
   position: fixed;
   inset: 0;
   background-image: url("fondo.png");
-  background-size: 130%;
+  background-size: 200% 200%;
   background-position: 50% 50%;
-  transition: background-position 0.15s ease-out;
+  transition: background-position 0.1s ease-out;
 }
 
 .texto-splash {
   position: fixed;
-  bottom: 16%;
-  left: 0; right: 0;
-  text-align: center;
-  z-index: 20;
+  bottom: 16%; left: 0; right: 0;
+  text-align: center; z-index: 20;
   transition: opacity 0.5s ease, transform 0.8s ease;
 }
 .texto-splash.oculto { opacity:0; transform:translateY(-20px); pointer-events:none; }
 .texto-splash h1 {
-  font-size: 40px;
-  font-weight: 700;
-  color: #1a0e0a;
-  letter-spacing: -1px;
+  font-family: Orbitron, sans-serif;
+  font-size: 40px; font-weight: 700;
+  color: #1a0e0a; letter-spacing: -1px;
   animation: float 6s ease-in-out infinite;
 }
 .texto-splash p {
   margin-top: 10px;
-  font-size: 9px;
-  letter-spacing: 4px;
+  font-family: Orbitron, sans-serif;
+  font-size: 9px; letter-spacing: 4px;
   text-transform: uppercase;
   color: rgba(26,14,10,0.45);
 }
@@ -46,147 +43,88 @@ body { overflow:hidden; min-height:100vh; font-family: Orbitron, sans-serif; }
 }
 
 .hint {
-  position: fixed;
-  bottom: 36px;
-  left: 0; right: 0;
-  text-align: center;
-  z-index: 20;
-  font-size: 9px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
+  position: fixed; bottom: 36px; left: 0; right: 0;
+  text-align: center; z-index: 20;
+  font-family: Orbitron, sans-serif;
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
   color: rgba(26,14,10,0.35);
   animation: pulso 2.5s ease-in-out infinite;
   transition: opacity 0.5s ease;
 }
 .hint.oculto { opacity:0; pointer-events:none; }
-@keyframes pulso {
-  0%,100% { opacity:0.3; }
-  50% { opacity:0.8; }
-}
+@keyframes pulso { 0%,100%{opacity:.3} 50%{opacity:.8} }
 
 #btn-giro {
-  position: fixed;
-  bottom: 80px; left: 50%;
+  position: fixed; bottom: 80px; left: 50%;
   transform: translateX(-50%);
   z-index: 99;
-  background: rgba(26,14,10,0.5);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-family: Orbitron, sans-serif;
-  font-size: 9px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  display: none;
+  background: rgba(26,14,10,0.5); color: white;
+  border: none; padding: 12px 24px; border-radius: 30px;
+  font-family: Orbitron, sans-serif; font-size: 9px;
+  letter-spacing: 2px; text-transform: uppercase; display: none;
 }
 
-/* Orbe */
 .orbe {
-  position: fixed;
-  top: 35px;
-  left: 50%;
+  position: fixed; top: 35px; left: 50%;
   transform: translateX(-50%) scale(0);
-  width: 110px; height: 110px;
-  border-radius: 50%;
-  overflow: hidden;
-  z-index: 15;
-  box-shadow: 0 0 0 2px rgba(255,255,255,0.2), 0 0 30px rgba(94,207,207,0.5), 0 0 70px rgba(94,207,207,0.2);
+  width: 110px; height: 110px; border-radius: 50%;
+  overflow: hidden; z-index: 15;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.2), 0 0 30px rgba(94,207,207,0.5);
   transition: transform 0.9s cubic-bezier(0.4,0,0.2,1);
 }
 .orbe.visible { transform: translateX(-50%) scale(1); }
 .orbe-fondo {
-  width: 100%; height: 100%;
+  width:100%; height:100%;
   background-image: url("fondo.png");
-  background-size: 200%;
+  background-size: 200% 200%;
   background-position: 50% 50%;
-  transition: background-position 0.15s ease-out;
+  transition: background-position 0.1s ease-out;
 }
 
-/* Interfaz */
 .interfaz {
-  position: fixed;
-  top: 170px; left: 0; right: 0; bottom: 0;
-  padding: 20px 24px 0;
-  overflow-y: auto;
-  opacity: 0;
-  transform: translateY(30px);
-  pointer-events: none;
-  transition: opacity 0.7s ease 0.5s, transform 0.7s ease 0.5s;
-  z-index: 10;
+  position: fixed; top: 170px; left: 0; right: 0; bottom: 0;
+  padding: 20px 24px 0; overflow-y: auto;
+  opacity: 0; transform: translateY(30px); pointer-events: none;
+  transition: opacity 0.7s ease 0.5s, transform 0.7s ease 0.5s; z-index: 10;
 }
 .interfaz.visible { opacity:1; transform:translateY(0); pointer-events:all; }
-
 .nombre-orbe {
-  text-align: center;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  color: rgba(26,14,10,0.4);
-  margin-bottom: 24px;
-  text-transform: uppercase;
-  opacity: 0;
-  transition: opacity 0.5s ease 0.9s;
+  text-align: center; font-family: Orbitron, sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  color: rgba(26,14,10,0.4); margin-bottom: 24px; text-transform: uppercase;
+  opacity: 0; transition: opacity 0.5s ease 0.9s;
 }
 .nombre-orbe.visible { opacity:1; }
-
 .buscador-wrap { display:flex; gap:10px; margin-bottom:20px; }
 .buscador {
-  flex:1;
-  background: rgba(255,255,255,0.5);
-  border: 1px solid rgba(255,255,255,0.7);
-  border-radius: 4px;
-  padding: 14px 16px;
-  color: #1a0e0a;
-  font-size: 14px;
-  outline: none;
-  backdrop-filter: blur(10px);
-  font-family: sans-serif;
+  flex:1; background: rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.7); border-radius: 4px;
+  padding: 14px 16px; color: #1a0e0a; font-size: 14px; outline: none;
+  backdrop-filter: blur(10px); font-family: sans-serif;
 }
 .buscador::placeholder { color: rgba(26,14,10,0.4); }
 .btn-buscar {
-  background: rgba(26,14,10,0.75);
-  border: none;
-  border-radius: 4px;
-  padding: 14px 18px;
-  color: white;
-  font-family: Orbitron, sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  cursor: pointer;
-  letter-spacing: 1px;
-  white-space: nowrap;
+  background: rgba(26,14,10,0.75); border: none; border-radius: 4px;
+  padding: 14px 18px; color: white; font-family: Orbitron, sans-serif;
+  font-size: 10px; font-weight: 700; cursor: pointer; letter-spacing: 1px; white-space: nowrap;
 }
 .sugerencias { display:flex; flex-wrap:wrap; gap:8px; }
 .sugerencia {
-  background: rgba(255,255,255,0.35);
-  border: 1px solid rgba(255,255,255,0.5);
-  border-radius: 20px;
-  padding: 7px 14px;
-  font-size: 12px;
-  color: rgba(26,14,10,0.7);
-  font-family: sans-serif;
-  backdrop-filter: blur(8px);
+  background: rgba(255,255,255,0.35); border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 20px; padding: 7px 14px; font-size: 12px;
+  color: rgba(26,14,10,0.7); font-family: sans-serif; backdrop-filter: blur(8px);
 }
 </style>
 </head>
 <body>
-
 <div id="fondo"></div>
-
-<div class="orbe" id="orbe">
-  <div class="orbe-fondo" id="orbe-fondo"></div>
-</div>
-
+<div class="orbe" id="orbe"><div class="orbe-fondo" id="orbe-fondo"></div></div>
 <div class="texto-splash" id="texto-splash">
   <h1>materialoteca</h1>
   <p>FAD – UNCUYO</p>
 </div>
-
 <div class="hint" id="hint">doble tap para entrar</div>
-
 <button id="btn-giro" onclick="pedirPermiso()">activar movimiento</button>
-
 <div class="interfaz" id="interfaz">
   <div class="nombre-orbe" id="nombre-orbe">materialoteca · FAD UNCUYO</div>
   <div class="buscador-wrap">
@@ -206,27 +144,24 @@ const fondo = document.getElementById("fondo");
 const orbeFondo = document.getElementById("orbe-fondo");
 
 function mover(x, y) {
-  // x e y entre -1 y 1
-  const bx = 50 + x * 20;
-  const by = 50 + y * 20;
-  fondo.style.backgroundPosition = bx + "% " + by + "%";
-  orbeFondo.style.backgroundPosition = (50 - x*10) + "% " + (50 - y*10) + "%";
+  fondo.style.backgroundPosition = x + "% " + y + "%";
+  orbeFondo.style.backgroundPosition = (100-x) + "% " + (100-y) + "%";
 }
 
-// Desktop
+// Desktop — mismo approach que test.html
 document.addEventListener("mousemove", function(e) {
-  const x = (e.clientX / window.innerWidth - 0.5) * 2;
-  const y = (e.clientY / window.innerHeight - 0.5) * 2;
+  const x = (e.clientX / window.innerWidth) * 100;
+  const y = (e.clientY / window.innerHeight) * 100;
   mover(x, y);
 });
 
-// Giroscopio
+// Giroscopio — mismo approach que test.html
 function activarGiro() {
   window.addEventListener("deviceorientation", function(e) {
     if (e.gamma === null) return;
-    const x = Math.max(-1, Math.min(1, e.gamma / 30));
-    const y = Math.max(-1, Math.min(1, (e.beta - 45) / 30));
-    mover(x, y);
+    const x = 50 + (e.gamma * 1.2);
+    const y = 50 + ((e.beta - 45) * 0.8);
+    mover(Math.max(0,Math.min(100,x)), Math.max(0,Math.min(100,y)));
   });
 }
 
@@ -245,13 +180,10 @@ if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEve
   activarGiro();
 }
 
-// Doble tap / doble click
-let lastTap = 0;
-let abierto = false;
-
+// Doble tap / click
+let lastTap = 0, abierto = false;
 function abrir() {
-  if (abierto) return;
-  abierto = true;
+  if (abierto) return; abierto = true;
   document.getElementById("orbe").classList.add("visible");
   document.getElementById("texto-splash").classList.add("oculto");
   document.getElementById("hint").classList.add("oculto");
@@ -261,7 +193,6 @@ function abrir() {
     document.getElementById("nombre-orbe").classList.add("visible");
   }, 400);
 }
-
 document.addEventListener("touchend", function(e) {
   const now = Date.now();
   if (now - lastTap < 300) abrir();
