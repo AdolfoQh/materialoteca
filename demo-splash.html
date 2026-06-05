@@ -137,7 +137,7 @@ function irBuscador() {
 let lastTap = 0;
 let tocado = false;
 document.addEventListener("touchend", function(e) {
-  e.preventDefault(); // cancela el click sintetico de iOS
+  if (e.target.tagName !== "BUTTON") e.preventDefault();
   const now = Date.now();
   const gap = now - lastTap;
   lastTap = now;
