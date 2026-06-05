@@ -1,26 +1,317 @@
-// Un solo listener maneja todo
-let lastTap = 0;
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Slab:wght@300;400;700&family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
 
+body {
+  overflow:hidden; min-height:100vh;
+  background: transparent;
+  transition: background 1s ease;
+}
+body.bienvenida { background: #14233f; }
+body.buscando   { background: #14233f; }
+
+/* ── FONDO ── */
+#fondo {
+  position: fixed;
+  width: 150vw; height: 150vh;
+  top: -25vh; left: -25vw;
+  background-image: url("fondo2.png");
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
+  border-radius: 0;
+  transition:
+    width 1.1s cubic-bezier(0.4,0,0.2,1),
+    height 1.1s cubic-bezier(0.4,0,0.2,1),
+    top 1.1s cubic-bezier(0.4,0,0.2,1),
+    left 1.1s cubic-bezier(0.4,0,0.2,1),
+    border-radius 1.1s cubic-bezier(0.4,0,0.2,1),
+    box-shadow 1.1s ease;
+  cursor: pointer;
+  z-index: 5;
+}
+
+body.bienvenida #fondo {
+  width: 160px; height: 160px;
+  top: calc(35vh - 80px);
+  left: calc(50vw - 80px);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.15), 0 0 40px rgba(255,255,255,0.15), 0 20px 60px rgba(0,0,0,0.3);
+  animation: orbFloat 4s ease-in-out infinite;
+  animation-delay: 1.2s;
+}
+
+body.buscando #fondo {
+  width: 80px; height: 80px;
+  top: 28px;
+  left: calc(50vw - 40px);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 0 20px rgba(255,255,255,0.1);
+  animation: none;
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-14px); }
+}
+
+/* ── SPLASH TEXT ── */
+.texto-splash {
+  position: fixed;
+  bottom: 16%; left: 0; right: 0;
+  text-align: center; z-index: 20;
+  transition: opacity 0.5s ease, transform 0.6s ease;
+}
+.texto-splash.oculto { opacity:0; transform:translateY(-16px); pointer-events:none; }
+
+.texto-splash h1 {
+  font-family: Orbitron, sans-serif;
+  font-size: 40px; font-weight: 700;
+  color: white; letter-spacing: -1px;
+  text-shadow: 0 4px 30px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.15);
+  animation: flow 7s ease-in-out infinite;
+}
+.texto-splash p {
+  margin-top: 0px; font-family: Roboto, sans-serif; font-weight: 900;
+  font-size: 11px; letter-spacing: 5px; text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
+  text-shadow: 0 4px 20px rgba(0,0,0,0.2), 0 2px 6px rgba(0,0,0,0.1);
+  animation: flow 7s ease-in-out infinite;
+  animation-delay: 0.1s;
+}
+@keyframes flow {
+  0%   { transform: translate(0px,0px) rotate(0deg); }
+  25%  { transform: translate(6px,-10px) rotate(0.5deg); }
+  50%  { transform: translate(-4px,-16px) rotate(-0.5deg); }
+  75%  { transform: translate(-8px,-6px) rotate(0.3deg); }
+  100% { transform: translate(0px,0px) rotate(0deg); }
+}
+
+/* ── HINT ── */
+.hint {
+  position: fixed; bottom: 36px; left: 0; right: 0;
+  text-align: center; z-index: 20;
+  font-family: Roboto, sans-serif; font-weight: 400; font-size: 11px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  animation: pulso 2.5s ease-in-out infinite;
+  transition: opacity 0.5s ease;
+}
+.hint.oculto { opacity:0; pointer-events:none; }
+@keyframes pulso { 0%,100%{opacity:.3} 50%{opacity:.8} }
+
+/* ── BTN GIRO ── */
+#btn-giro {
+  position: fixed; bottom: 80px; left: 50%;
+  transform: translateX(-50%); z-index: 99;
+  background: rgba(255,255,255,0.15); color: white;
+  border: none; padding: 12px 24px; border-radius: 30px;
+  font-family: Roboto, sans-serif; font-size: 11px;
+  letter-spacing: 2px; text-transform: uppercase; display: none;
+}
+
+/* ── BIENVENIDA ── */
+.bienvenida-wrap {
+  position: fixed;
+  top: 35vh; left: 0; right: 0;
+  margin-top: 100px; /* debajo de la orbe */
+  padding: 0 36px;
+  text-align: center;
+  z-index: 20;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: opacity 0.7s ease 0.8s, transform 0.7s ease 0.8s;
+}
+.bienvenida-wrap.visible {
+  opacity: 1; transform: translateY(0); pointer-events: all;
+}
+.bienvenida-wrap p {
+  font-family: 'Roboto Slab', serif;
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.75);
+}
+.bienvenida-wrap .hint-tap {
+  margin-top: 32px;
+  font-family: Roboto, sans-serif;
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  animation: pulso 2.5s ease-in-out infinite;
+}
+
+/* ── BUSCADOR ── */
+.buscador-wrap-outer {
+  position: fixed;
+  top: 130px; left: 0; right: 0; bottom: 0;
+  padding: 20px 24px 0;
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: opacity 0.7s ease 0.5s, transform 0.7s ease 0.5s;
+  z-index: 10;
+}
+.buscador-wrap-outer.visible { opacity:1; transform:translateY(0); pointer-events:all; }
+
+.buscador-row { display:flex; gap:10px; margin-bottom:20px; }
+.buscador {
+  flex:1;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  padding: 14px 16px; color: white; font-size: 14px; outline: none;
+  font-family: 'Roboto Slab', serif; font-weight: 300;
+}
+.buscador::placeholder { color: rgba(255,255,255,0.3); }
+.buscador:focus { border-color: rgba(255,255,255,0.4); }
+.btn-buscar {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  padding: 14px 18px; color: white;
+  font-family: Roboto, sans-serif;
+  font-size: 10px; font-weight: 700;
+  cursor: pointer; letter-spacing: 1px; white-space: nowrap;
+}
+.sugerencias { display:flex; flex-wrap:wrap; gap:8px; }
+.sugerencia {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px; padding: 7px 14px; font-size: 12px;
+  color: rgba(255,255,255,0.5); font-family: Roboto, sans-serif;
+}
+</style>
+</head>
+<body>
+
+<div id="fondo"></div>
+
+<div class="texto-splash" id="texto-splash">
+  <h1>materialoteca</h1>
+  <p>FAD &ndash; UNCUYO</p>
+</div>
+<div class="hint" id="hint">doble tap para entrar</div>
+<button id="btn-giro" onclick="pedirPermiso()">activar movimiento</button>
+
+<!-- PANTALLA BIENVENIDA -->
+<div class="bienvenida-wrap" id="bienvenida-wrap">
+  <p>Hola. Soy la Materialoteca de Tecnología.<br>Preguntame sobre cualquier material: qué es, para qué sirve, o cómo se compara con otros.</p>
+  <div class="hint-tap">tocá la esfera para consultar</div>
+</div>
+
+<!-- PANTALLA BUSCADOR -->
+<div class="buscador-wrap-outer" id="buscador-wrap">
+  <div class="buscador-row">
+    <input class="buscador" type="text" placeholder="¿Qué material necesitás?">
+    <button class="btn-buscar">Consultar</button>
+  </div>
+  <div class="sugerencias">
+    <div class="sugerencia">¿Qué es el cartón corrugado?</div>
+    <div class="sugerencia">Material rígido y reciclable</div>
+    <div class="sugerencia">Comparar cartón y PET</div>
+    <div class="sugerencia">Material liviano para etiquetas</div>
+  </div>
+</div>
+
+<script>
+const fondo = document.getElementById("fondo");
+const MAX = 80;
+let estado = "splash";
+
+function mover(px, py) {
+  if (estado !== "splash") return;
+  const mx = ((px/100)-0.5)*MAX*2;
+  const my = ((py/100)-0.5)*MAX*2;
+  fondo.style.transform = "translate("+mx+"px,"+my+"px)";
+}
+
+document.addEventListener("mousemove", function(e) {
+  mover((e.clientX/window.innerWidth)*100, (e.clientY/window.innerHeight)*100);
+});
+
+function activarGiro() {
+  window.addEventListener("deviceorientation", function(e) {
+    if (e.gamma===null) return;
+    mover(Math.max(0,Math.min(100,50+e.gamma*1.5)), Math.max(0,Math.min(100,50+(e.beta-45))));
+  });
+}
+
+function pedirPermiso() {
+  DeviceOrientationEvent.requestPermission().then(function(s) {
+    if (s==="granted") { document.getElementById("btn-giro").style.display="none"; activarGiro(); }
+  });
+}
+
+if (typeof DeviceOrientationEvent!=="undefined" && typeof DeviceOrientationEvent.requestPermission==="function") {
+  document.getElementById("btn-giro").style.display="block";
+} else if (window.DeviceOrientationEvent) {
+  activarGiro();
+}
+
+function irBienvenida() {
+  if (estado!=="splash") return;
+  estado = "bienvenida";
+  fondo.style.transform = "none";
+  document.body.classList.add("bienvenida");
+  document.getElementById("texto-splash").classList.add("oculto");
+  document.getElementById("hint").classList.add("oculto");
+  document.getElementById("btn-giro").style.display = "none";
+  setTimeout(function() {
+    document.getElementById("bienvenida-wrap").classList.add("visible");
+  }, 900);
+}
+
+function irBuscador() {
+  if (estado!=="bienvenida") return;
+  estado = "buscador";
+  document.body.classList.add("buscando");
+  document.getElementById("bienvenida-wrap").style.opacity = "0";
+  document.getElementById("bienvenida-wrap").style.pointerEvents = "none";
+  setTimeout(function() {
+    document.getElementById("buscador-wrap").classList.add("visible");
+  }, 400);
+}
+
+// TOUCH — un solo listener, sin conflictos
+let lastTap = 0;
 document.addEventListener("touchend", function(e) {
   const now = Date.now();
-  const doubleTap = (now - lastTap < 300);
+  const gap = now - lastTap;
   lastTap = now;
 
-  if (estado === "splash" && doubleTap) {
-    irBienvenida();
+  if (estado === "splash") {
+    if (gap < 300) irBienvenida();
     return;
   }
 
   if (estado === "bienvenida") {
-    if (e.target === fondo || fondo.contains(e.target)) {
-      irBuscador();
-    }
+    if (e.target === fondo || fondo.contains(e.target)) irBuscador();
+  }
+}, false);
+
+// Desktop — doble click
+let lastClick = 0;
+document.addEventListener("click", function(e) {
+  const now = Date.now();
+  if (estado === "splash") {
+    if (now - lastClick < 400) irBienvenida();
+    lastClick = now;
+    return;
+  }
+  if (estado === "bienvenida") {
+    if (e.target === fondo || fondo.contains(e.target)) irBuscador();
   }
 });
-
-document.addEventListener("dblclick", function() {
-  if (estado === "splash") irBienvenida();
-});
-fondo.addEventListener("click", function() {
-  if (estado === "bienvenida") irBuscador();
-});
+</script>
+</body>
+</html>
