@@ -264,32 +264,35 @@ if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEve
   activarGiro();
 }
 
-// Doble tap → bienvenida
+// Un solo listener para todo
 let lastTap = 0;
-let tiempoBienvenida = 0;
+
 document.addEventListener("touchend", function(e) {
   const now = Date.now();
-  if (now - lastTap < 300) {
-    if (estado === "splash") irBienvenida();
-  }
+  const doubleTap = (now - lastTap < 300);
   lastTap = now;
-});
-document.addEventListener("dblclick", function() {
-  if (estado === "splash") irBienvenida();
+
+  if (estado === "splash" && doubleTap) {
+    irBienvenida();
+    return;
+  }
+
+  if (estado === "bienvenida") {
+    const toco = e.target === fondo || fondo.contains(e.target);
+    if (toco) irBuscador();
+  }
 });
 
-// Tap en orbe → buscador
+// Desktop
+document.addEventListener("dblclick", function(e) {
+  if (estado === "splash") irBienvenida();
+});
 fondo.addEventListener("click", function() {
   if (estado === "bienvenida") irBuscador();
-});
-fondo.addEventListener("touchend", function(e) {
-  if (Date.now() - tiempoBienvenida < 1200) return;
-  if (estado === "bienvenida") { e.preventDefault(); irBuscador(); }
 });
 
 function irBienvenida() {
   estado = "bienvenida";
-  tiempoBienvenida = Date.now();
   fondo.style.transform = "none";
   document.body.classList.add("bienvenida");
   document.getElementById("texto-splash").classList.add("oculto");
