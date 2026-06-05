@@ -38,7 +38,7 @@ body.buscando #fondo   { opacity:0; pointer-events:none; }
   cursor:pointer;
   filter: drop-shadow(0 0 20px rgba(94,180,207,0.4));
 }
-body.bienvenida #orbe-img { opacity:1; pointer-events:all; }
+body.bienvenida #orbe-img { opacity:1; pointer-events:all; animation:orbFloat 4s ease-in-out infinite; }
 body.buscando #orbe-img {
   opacity:1; pointer-events:all;
   width:80px; height:80px;
@@ -82,7 +82,7 @@ body.buscando #orbe-img {
   flex:1; background:rgba(255,255,255,0.07);
   border:1px solid rgba(255,255,255,0.15); border-radius:8px;
   padding:12px 16px; color:white; font-size:14px; outline:none;
-  font-family:'Roboto Slab',serif; font-weight:300;
+  font-family:Roboto,sans-serif; font-weight:300;
 }
 .buscador::placeholder { color:rgba(255,255,255,0.3); }
 .buscador:focus { border-color:rgba(255,255,255,0.35); }
@@ -110,7 +110,7 @@ body.buscando #orbe-img {
 
 /* Label sección */
 .seccion-label {
-  padding:16px 20px 8px;
+  padding:12px 20px 4px;
   font-family:Roboto,sans-serif; font-size:9px; font-weight:700;
   letter-spacing:3px; text-transform:uppercase;
   color:rgba(255,255,255,0.25);
@@ -133,7 +133,7 @@ body.buscando #orbe-img {
 .spinner-wrap span { font-family:Roboto,sans-serif; font-size:12px; color:rgba(255,255,255,0.4); letter-spacing:1px; }
 
 /* Resultados */
-#resultados { padding:0 20px 40px; }
+#resultados { padding:16px 20px 40px; }
 
 /* Tarjeta */
 .tarjeta {
@@ -215,7 +215,7 @@ body.buscando #orbe-img {
 <div class="hint" id="hint">doble tap para entrar</div>
 <button id="btn-giro" onclick="pedirPermiso()">activar movimiento</button>
 <div class="bienvenida-wrap" id="bienvenida-wrap">
-  <p>Hola. Soy la Materialoteca de Tecnología.<br>Preguntame sobre cualquier material: qué es, para qué sirve, o cómo se compara con otros.</p>
+  <p>Hola. Soy la <strong>Materialoteca</strong> de Tecnología.<br>Preguntame sobre cualquier material: qué es, para qué sirve, o cómo se compara con otros.</p>
   <div class="hint-tap">tocá la esfera para consultar</div>
 </div>
 <div class="buscador-wrap-outer" id="buscador-wrap">
@@ -244,7 +244,7 @@ body.buscando #orbe-img {
 <script>
 const fondo = document.getElementById("fondo");
 const MAX = 80;
-let estado = "splash";
+let estado = sessionStorage.getItem("estado") || "splash";
 
 function mover(px, py) {
   if (estado !== "splash") return;
@@ -273,6 +273,7 @@ if (typeof DeviceOrientationEvent!=="undefined" && typeof DeviceOrientationEvent
 function irBienvenida() {
   if (estado!=="splash") return;
   estado = "bienvenida";
+  sessionStorage.setItem("estado","bienvenida");
   fondo.style.transform = ""; fondo.style.willChange = "background-position";
   document.body.classList.add("bienvenida");
   document.getElementById("texto-splash").classList.add("oculto");
@@ -284,6 +285,7 @@ function irBienvenida() {
 function irBuscador() {
   if (estado!=="bienvenida") return;
   estado = "buscador";
+  sessionStorage.setItem("estado","buscador");
   document.body.classList.add("buscando");
   document.getElementById("bienvenida-wrap").style.opacity = "0";
   document.getElementById("bienvenida-wrap").style.pointerEvents = "none";
@@ -394,6 +396,26 @@ function renderizar(data) {
 document.getElementById("input-consulta") && document.getElementById("input-consulta").addEventListener("keydown", function(e) {
   if (e.key === "Enter") consultar();
 });
+
+
+// Restaurar estado al recargar
+(function() {
+  const s = sessionStorage.getItem("estado");
+  if (s === "buscador") {
+    document.body.classList.add("bienvenida","buscando");
+    document.getElementById("texto-splash").classList.add("oculto");
+    document.getElementById("hint").classList.add("oculto");
+    document.getElementById("orbe-img").style.cssText = "";
+    document.getElementById("buscador-wrap").classList.add("visible");
+    estado = "buscador";
+  } else if (s === "bienvenida") {
+    document.body.classList.add("bienvenida");
+    document.getElementById("texto-splash").classList.add("oculto");
+    document.getElementById("hint").classList.add("oculto");
+    document.getElementById("bienvenida-wrap").classList.add("visible");
+    estado = "bienvenida";
+  }
+})();
 
 </script>
 </body>
