@@ -110,7 +110,7 @@ body.buscando #orbe-img {
 
 /* Label sección */
 .seccion-label {
-  padding:24px 20px 12px;
+  padding:16px 20px 8px;
   font-family:Roboto,sans-serif; font-size:9px; font-weight:700;
   letter-spacing:3px; text-transform:uppercase;
   color:rgba(255,255,255,0.25);
@@ -294,7 +294,7 @@ function irBuscador() {
 let lastTap = 0;
 let tocado = false;
 document.addEventListener("touchend", function(e) {
-  if (e.target.tagName !== "BUTTON") e.preventDefault();
+  if (e.target.tagName !== "BUTTON" && e.target.tagName !== "INPUT") e.preventDefault();
   const now = Date.now();
   const gap = now - lastTap;
   lastTap = now;
