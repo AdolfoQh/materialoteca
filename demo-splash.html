@@ -135,10 +135,14 @@ function irBuscador() {
 
 // UN SOLO listener touch
 let lastTap = 0;
+let tocado = false;
 document.addEventListener("touchend", function(e) {
+  e.preventDefault(); // cancela el click sintetico de iOS
   const now = Date.now();
   const gap = now - lastTap;
   lastTap = now;
+  tocado = true;
+  setTimeout(function(){ tocado = false; }, 500);
   if (estado === "splash") {
     if (gap < 300) irBienvenida();
     return;
@@ -146,20 +150,15 @@ document.addEventListener("touchend", function(e) {
   if (estado === "bienvenida") {
     if (e.target === fondo || fondo.contains(e.target)) irBuscador();
   }
-}, false);
+}, { passive: false });
 
-// Desktop
-let lastClick = 0;
-document.addEventListener("click", function(e) {
-  const now = Date.now();
-  if (estado === "splash") {
-    if (now - lastClick < 400) irBienvenida();
-    lastClick = now;
-    return;
-  }
-  if (estado === "bienvenida") {
-    if (e.target === fondo || fondo.contains(e.target)) irBuscador();
-  }
+// Desktop solamente
+document.addEventListener("dblclick", function() {
+  if (estado === "splash") irBienvenida();
+});
+fondo.addEventListener("click", function() {
+  if (tocado) return; // ignorar clicks sinteticos de touch
+  if (estado === "bienvenida") irBuscador();
 });
 </script>
 </body>
