@@ -123,7 +123,7 @@ if (typeof DeviceOrientationEvent!=="undefined" && typeof DeviceOrientationEvent
 function irBienvenida() {
   if (estado!=="splash") return;
   estado = "bienvenida";
-  fondo.style.transform = "none";
+  fondo.style.transform = ""; fondo.style.willChange = "background-position";
   document.body.classList.add("bienvenida");
   document.getElementById("texto-splash").classList.add("oculto");
   document.getElementById("hint").classList.add("oculto");
