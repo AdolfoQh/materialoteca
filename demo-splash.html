@@ -89,7 +89,7 @@ body.buscando #orbe-img {
 .btn-buscar {
   background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2);
   border-radius:8px; padding:12px 18px; color:white;
-  font-family:Roboto,sans-serif; font-size:10px; font-weight:700;
+  font-family:Roboto,sans-serif; font-size:16px; font-weight:700;
   cursor:pointer; letter-spacing:1px; white-space:nowrap;
   transition:background 0.2s;
 }
@@ -110,7 +110,7 @@ body.buscando #orbe-img {
 
 /* Label sección */
 .seccion-label {
-  padding:12px 20px 4px;
+  padding:8px 20px 2px;
   font-family:Roboto,sans-serif; font-size:9px; font-weight:700;
   letter-spacing:3px; text-transform:uppercase;
   color:rgba(255,255,255,0.25);
@@ -405,7 +405,7 @@ document.getElementById("input-consulta") && document.getElementById("input-cons
     document.body.classList.add("bienvenida","buscando");
     document.getElementById("texto-splash").classList.add("oculto");
     document.getElementById("hint").classList.add("oculto");
-    document.getElementById("orbe-img").style.cssText = "";
+    // no resetear inline styles de orbe
     document.getElementById("buscador-wrap").classList.add("visible");
     estado = "buscador";
   } else if (s === "bienvenida") {
