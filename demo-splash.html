@@ -63,14 +63,146 @@ body.buscando #orbe-img {
 .bienvenida-wrap p { font-family:'Roboto Slab',serif; font-weight:300; font-size:15px; line-height:1.7; color:rgba(255,255,255,0.75); }
 .bienvenida-wrap .hint-tap { margin-top:32px; font-family:Roboto,sans-serif; font-weight:400; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.3); animation:pulso 2.5s ease-in-out infinite; }
 
-.buscador-wrap-outer { position:fixed; top:130px; left:0; right:0; bottom:0; padding:20px 24px 0; overflow-y:auto; opacity:0; transform:translateY(20px); pointer-events:none; transition:opacity 0.7s ease 0.5s,transform 0.7s ease 0.5s; z-index:10; }
+.buscador-wrap-outer {
+  position:fixed; top:120px; left:0; right:0; bottom:0;
+  padding:0; overflow-y:auto; opacity:0; transform:translateY(20px);
+  pointer-events:none; transition:opacity 0.7s ease 0.5s,transform 0.7s ease 0.5s; z-index:10;
+}
 .buscador-wrap-outer.visible { opacity:1; transform:translateY(0); pointer-events:all; }
-.buscador-row { display:flex; gap:10px; margin-bottom:20px; }
-.buscador { flex:1; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); border-radius:4px; padding:14px 16px; color:white; font-size:14px; outline:none; font-family:'Roboto Slab',serif; font-weight:300; }
+
+/* Barra de búsqueda */
+.search-bar {
+  display:flex; gap:10px;
+  padding:16px 20px;
+  background:rgba(20,35,63,0.95);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  position:sticky; top:0; z-index:5;
+}
+.buscador {
+  flex:1; background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.15); border-radius:8px;
+  padding:12px 16px; color:white; font-size:14px; outline:none;
+  font-family:'Roboto Slab',serif; font-weight:300;
+}
 .buscador::placeholder { color:rgba(255,255,255,0.3); }
-.btn-buscar { background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.2); border-radius:4px; padding:14px 18px; color:white; font-family:Roboto,sans-serif; font-size:10px; font-weight:700; cursor:pointer; letter-spacing:1px; white-space:nowrap; }
-.sugerencias { display:flex; flex-wrap:wrap; gap:8px; }
-.sugerencia { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:7px 14px; font-size:12px; color:rgba(255,255,255,0.5); font-family:Roboto,sans-serif; }
+.buscador:focus { border-color:rgba(255,255,255,0.35); }
+.btn-buscar {
+  background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2);
+  border-radius:8px; padding:12px 18px; color:white;
+  font-family:Roboto,sans-serif; font-size:10px; font-weight:700;
+  cursor:pointer; letter-spacing:1px; white-space:nowrap;
+  transition:background 0.2s;
+}
+.btn-buscar:hover { background:rgba(255,255,255,0.2); }
+
+/* Sugerencias */
+.sugerencias {
+  display:flex; flex-wrap:wrap; gap:8px;
+  padding:20px 20px 0;
+}
+.sugerencia {
+  background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+  border-radius:20px; padding:8px 16px; font-size:12px;
+  color:rgba(255,255,255,0.45); font-family:Roboto,sans-serif;
+  cursor:pointer; transition:all 0.2s;
+}
+.sugerencia:hover { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.8); }
+
+/* Label sección */
+.seccion-label {
+  padding:24px 20px 12px;
+  font-family:Roboto,sans-serif; font-size:9px; font-weight:700;
+  letter-spacing:3px; text-transform:uppercase;
+  color:rgba(255,255,255,0.25);
+}
+
+/* Spinner */
+.spinner-wrap {
+  display:none; align-items:center; gap:12px;
+  padding:24px 20px;
+}
+.spinner-wrap.visible { display:flex; }
+.spinner {
+  width:18px; height:18px;
+  border:2px solid rgba(255,255,255,0.1);
+  border-top-color:rgba(255,255,255,0.5);
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.spinner-wrap span { font-family:Roboto,sans-serif; font-size:12px; color:rgba(255,255,255,0.4); letter-spacing:1px; }
+
+/* Resultados */
+#resultados { padding:0 20px 40px; }
+
+/* Tarjeta */
+.tarjeta {
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px; overflow:hidden;
+  margin-bottom:20px;
+  animation:fadeUp 0.4s ease forwards; opacity:0;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.tarjeta-imagen {
+  width:100%; height:200px;
+  object-fit:cover; display:block;
+  background:rgba(255,255,255,0.03);
+}
+.tarjeta-imagen-placeholder {
+  width:100%; height:140px;
+  background:rgba(255,255,255,0.03);
+  display:flex; align-items:center; justify-content:center;
+  color:rgba(255,255,255,0.15); font-size:10px; letter-spacing:2px; text-transform:uppercase;
+  font-family:Roboto,sans-serif;
+}
+
+.tarjeta-body { padding:20px; }
+
+.tarjeta-familia {
+  font-family:Roboto,sans-serif; font-size:9px; font-weight:700;
+  letter-spacing:3px; text-transform:uppercase;
+  color:rgba(94,180,207,0.8); margin-bottom:6px;
+}
+.tarjeta-nombre {
+  font-family:'Roboto Slab',serif; font-size:24px; font-weight:700;
+  color:white; margin-bottom:10px; line-height:1.2;
+}
+.tarjeta-descripcion {
+  font-family:'Roboto Slab',serif; font-size:13px; font-weight:300;
+  color:rgba(255,255,255,0.6); line-height:1.7; margin-bottom:20px;
+}
+
+.tarjeta-ficha {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:16px; margin-bottom:16px;
+}
+.ficha-item {}
+.ficha-label {
+  font-family:Roboto,sans-serif; font-size:8px; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase;
+  color:rgba(255,255,255,0.3); margin-bottom:4px;
+}
+.ficha-valor {
+  font-family:Roboto,sans-serif; font-size:12px; font-weight:300;
+  color:rgba(255,255,255,0.7); line-height:1.5;
+}
+
+.tarjeta-sustentabilidad {
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:8px; padding:14px 16px; margin-top:4px;
+}
+.tarjeta-sustentabilidad .ficha-label { margin-bottom:6px; }
+.tarjeta-sustentabilidad .ficha-valor { font-size:12px; }
+
+/* Respuesta texto */
+.respuesta-texto {
+  font-family:'Roboto Slab',serif; font-size:14px; font-weight:300;
+  color:rgba(255,255,255,0.7); line-height:1.7;
+  padding:16px 0 8px;
+}
 </style>
 </head>
 <body>
@@ -87,16 +219,27 @@ body.buscando #orbe-img {
   <div class="hint-tap">tocá la esfera para consultar</div>
 </div>
 <div class="buscador-wrap-outer" id="buscador-wrap">
-  <div class="buscador-row">
-    <input class="buscador" type="text" placeholder="¿Qué material necesitás?">
-    <button class="btn-buscar">Consultar</button>
+
+  <div class="search-bar">
+    <input class="buscador" id="input-consulta" type="text" placeholder="¿Qué material necesitás?">
+    <button class="btn-buscar" id="btn-consultar" onclick="consultar()">Consultar</button>
   </div>
+
+  <div class="seccion-label">Sugerencias</div>
   <div class="sugerencias">
-    <div class="sugerencia">¿Qué es el cartón corrugado?</div>
-    <div class="sugerencia">Material rígido y reciclable</div>
-    <div class="sugerencia">Comparar cartón y PET</div>
-    <div class="sugerencia">Material liviano para etiquetas</div>
+    <div class="sugerencia" onclick="usarSugerencia(this)">¿Qué es el cartón corrugado?</div>
+    <div class="sugerencia" onclick="usarSugerencia(this)">Material rígido y reciclable</div>
+    <div class="sugerencia" onclick="usarSugerencia(this)">Comparar cartón y PET</div>
+    <div class="sugerencia" onclick="usarSugerencia(this)">Material liviano para etiquetas</div>
   </div>
+
+  <div class="spinner-wrap" id="spinner">
+    <div class="spinner"></div>
+    <span>Consultando...</span>
+  </div>
+
+  <div id="resultados"></div>
+
 </div>
 <script>
 const fondo = document.getElementById("fondo");
@@ -175,6 +318,83 @@ fondo.addEventListener("click", function() {
   if (tocado) return; // ignorar clicks sinteticos de touch
   if (estado === "bienvenida") irBuscador();
 });
+
+function usarSugerencia(el) {
+  document.getElementById("input-consulta").value = el.textContent;
+  consultar();
+}
+
+async function consultar() {
+  const input = document.getElementById("input-consulta");
+  const consulta = input.value.trim();
+  if (!consulta) return;
+
+  const btn = document.getElementById("btn-consultar");
+  const spinner = document.getElementById("spinner");
+  const resultados = document.getElementById("resultados");
+
+  btn.disabled = true;
+  spinner.classList.add("visible");
+  resultados.innerHTML = "";
+
+  try {
+    const res = await fetch("https://materialoteca.vercel.app/api/consulta?consulta=" + encodeURIComponent(consulta));
+    const texto = await res.text();
+    const data = JSON.parse(texto.replace(/```json|```/g,"").trim());
+    renderizar(data);
+  } catch(err) {
+    resultados.innerHTML = '<div class="respuesta-texto">No se pudo conectar. Revisá tu conexión.</div>';
+  } finally {
+    btn.disabled = false;
+    spinner.classList.remove("visible");
+  }
+}
+
+function renderizar(data) {
+  const resultados = document.getElementById("resultados");
+  let html = "";
+
+  if (data.respuesta_texto) {
+    html += '<div class="respuesta-texto">' + data.respuesta_texto + '</div>';
+  }
+
+  if (data.materiales && data.materiales.length > 0) {
+    data.materiales.forEach(function(m, i) {
+      html += '<div class="tarjeta" style="animation-delay:' + (i*0.1) + 's">';
+
+      if (m.imagen_url && !m.imagen_url.includes("example.com")) {
+        html += '<img class="tarjeta-imagen" src="' + m.imagen_url + '" onerror="this.style.display='none'">';
+      } else {
+        html += '<div class="tarjeta-imagen-placeholder">sin imagen</div>';
+      }
+
+      html += '<div class="tarjeta-body">';
+      html += '<div class="tarjeta-familia">' + (m.familia||"") + '</div>';
+      html += '<div class="tarjeta-nombre">' + (m.nombre||"") + '</div>';
+      html += '<div class="tarjeta-descripcion">' + (m.descripcion||"") + '</div>';
+
+      html += '<div class="tarjeta-ficha">';
+      if (m.propiedades_clave) html += '<div class="ficha-item"><div class="ficha-label">Propiedades</div><div class="ficha-valor">' + m.propiedades_clave + '</div></div>';
+      if (m.usos)             html += '<div class="ficha-item"><div class="ficha-label">Usos en diseño</div><div class="ficha-valor">' + m.usos + '</div></div>';
+      if (m.ventajas)         html += '<div class="ficha-item"><div class="ficha-label">Ventajas</div><div class="ficha-valor">' + m.ventajas + '</div></div>';
+      if (m.limitaciones)     html += '<div class="ficha-item"><div class="ficha-label">Limitaciones</div><div class="ficha-valor">' + m.limitaciones + '</div></div>';
+      html += '</div>';
+
+      if (m.sustentabilidad) {
+        html += '<div class="tarjeta-sustentabilidad"><div class="ficha-label">Sustentabilidad</div><div class="ficha-valor">' + m.sustentabilidad + '</div></div>';
+      }
+
+      html += '</div></div>';
+    });
+  }
+
+  resultados.innerHTML = html;
+}
+
+document.getElementById("input-consulta") && document.getElementById("input-consulta").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") consultar();
+});
+
 </script>
 </body>
 </html>
