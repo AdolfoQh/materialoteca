@@ -266,6 +266,7 @@ if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEve
 
 // Doble tap → bienvenida
 let lastTap = 0;
+let tiempoBienvenida = 0;
 document.addEventListener("touchend", function(e) {
   const now = Date.now();
   if (now - lastTap < 300) {
@@ -282,11 +283,13 @@ fondo.addEventListener("click", function() {
   if (estado === "bienvenida") irBuscador();
 });
 fondo.addEventListener("touchend", function(e) {
+  if (Date.now() - tiempoBienvenida < 1200) return;
   if (estado === "bienvenida") { e.preventDefault(); irBuscador(); }
 });
 
 function irBienvenida() {
   estado = "bienvenida";
+  tiempoBienvenida = Date.now();
   fondo.style.transform = "none";
   document.body.classList.add("bienvenida");
   document.getElementById("texto-splash").classList.add("oculto");
