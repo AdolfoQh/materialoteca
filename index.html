@@ -370,6 +370,7 @@ body.buscando #header { opacity:1; pointer-events:all; }
   object-fit:cover; display:block;
   background:rgba(255,255,255,0.03);
 }
+.tarjeta-imagen.lightbox-trigger { cursor:zoom-in; }
 .tarjeta-imagen-placeholder {
   width:100%; height:140px;
   background:rgba(255,255,255,0.03);
@@ -695,7 +696,7 @@ function renderizar(data) {
       html += '<div class="tarjeta" style="animation-delay:' + (i*0.1) + 's">';
 
       if (m.imagen_url && !m.imagen_url.includes("example.com")) {
-        html += "<img class=\"tarjeta-imagen\" src=\"" + m.imagen_url + "\" style=\"cursor:zoom-in\" onclick=\"abrirLightbox(this.src)\" onerror=\"this.style.display='none'\">";
+        html += '<img class="tarjeta-imagen lightbox-trigger" src="' + m.imagen_url + '" onerror="this.style.display=\'none\'">';
       } else {
         html += '<div class="tarjeta-imagen-placeholder">sin imagen</div>';
       }
@@ -852,6 +853,9 @@ function abrirLightbox(src) {
   document.getElementById("lightbox-img").src = src;
   document.getElementById("lightbox").classList.add("visible");
 }
+document.getElementById("resultados").addEventListener("click", function(e) {
+  if (e.target.classList.contains("lightbox-trigger")) abrirLightbox(e.target.src);
+});
 
 // Mostrar instrucciones iOS si es Safari
 const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
