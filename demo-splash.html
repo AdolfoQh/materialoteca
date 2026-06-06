@@ -420,19 +420,14 @@ body.buscando #header { opacity:1; pointer-events:all; }
 
 <!-- HEADER (visible en buscador) -->
 <div id="header">
-  <div class="header-logo">
-    <img src="fad-blanco.png" alt="FAD"> materialoteca
+  <div id="nav-container" onclick="toggleMenu()">
+    <span class="toggle-icon">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </span>
   </div>
-  <div style="display:flex;gap:12px;align-items:center">
-    <a class="btn-cargar" href="https://docs.google.com/forms/d/e/1FAIpQLSdeQC03QDjA4bjF2XJT5Fn1W1JaHC_Bw9sBMdxfTcitjYq-WA/viewform" target="_blank">Cargar material</a>
-    <div id="nav-container" onclick="toggleMenu()">
-      <span class="toggle-icon">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </span>
-    </div>
-  </div>
+  <a class="btn-cargar" href="https://docs.google.com/forms/d/e/1FAIpQLSdeQC03QDjA4bjF2XJT5Fn1W1JaHC_Bw9sBMdxfTcitjYq-WA/viewform" target="_blank">Cargar material</a>
 </div>
 
 <!-- OVERLAY -->
@@ -493,6 +488,7 @@ body.buscando #header { opacity:1; pointer-events:all; }
 <div class="bienvenida-wrap" id="bienvenida-wrap">
   <p>Hola. Soy la <strong>Materialoteca</strong> de Tecnología.<br>Preguntame sobre cualquier material: qué es, para qué sirve, o cómo se compara con otros.</p>
   <div class="hint-tap">tocá la esfera para consultar</div>
+  <div style="margin-top:40px;text-align:center;"><img src="fad-blanco.png" style="height:28px;opacity:0.5"></div>
 </div>
 <div class="buscador-wrap-outer" id="buscador-wrap">
 
@@ -572,7 +568,9 @@ function irBuscador() {
 let lastTap = 0;
 let tocado = false;
 document.addEventListener("touchend", function(e) {
-  if (e.target.tagName !== "BUTTON" && e.target.tagName !== "INPUT" && e.target.tagName !== "A") e.preventDefault();
+  const navContainer = document.getElementById("nav-container");
+  const skipPrevent = e.target.tagName === "BUTTON" || e.target.tagName === "INPUT" || e.target.tagName === "A" || e.target === navContainer || (navContainer && navContainer.contains(e.target));
+  if (!skipPrevent) e.preventDefault();
   const now = Date.now();
   const gap = now - lastTap;
   lastTap = now;
