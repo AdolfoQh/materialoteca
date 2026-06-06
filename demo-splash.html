@@ -167,7 +167,7 @@ body.buscando #header { opacity:1; pointer-events:all; }
 #nav-container {
   position:relative; width:40px; height:40px;
   display:flex; align-items:center; justify-content:center;
-  font-size:8px;
+  font-size:8px; align-self:center; flex-shrink:0;
 }
 .toggle-icon {
   display:block; position:relative; width:100%;
@@ -428,7 +428,7 @@ body.buscando #header { opacity:1; pointer-events:all; }
       <span class="bar"></span>
     </span>
   </div>
-  <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeQC03QDjA4bjF2XJT5Fn1W1JaHC_Bw9sBMdxfTcitjYq-WA/viewform" target="_blank" style="display:flex;align-items:center;opacity:0.8;padding:8px"><img src="upload.png" style="height:26px"></a>
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeQC03QDjA4bjF2XJT5Fn1W1JaHC_Bw9sBMdxfTcitjYq-WA/viewform" target="_blank" id="btn-upload" style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;opacity:0.8"><img src="upload.png" style="height:26px;pointer-events:none"></a>
 </div>
 
 <!-- OVERLAY -->
@@ -436,7 +436,6 @@ body.buscando #header { opacity:1; pointer-events:all; }
 
 <!-- PANEL LATERAL -->
 <div id="menu-panel">
-  <button class="menu-close" onclick="cerrarMenu()">✕</button>
   <div class="menu-seccion">
     <h3>Cargar material</h3>
     <p>Cargá el material que analizaste.</p>
@@ -568,7 +567,7 @@ let lastTap = 0;
 let tocado = false;
 document.addEventListener("touchend", function(e) {
   const navContainer = document.getElementById("nav-container");
-  const skipPrevent = e.target.tagName === "BUTTON" || e.target.tagName === "INPUT" || e.target.tagName === "A" || e.target === navContainer || (navContainer && navContainer.contains(e.target));
+  const skipPrevent = e.target.tagName === "BUTTON" || e.target.tagName === "INPUT" || e.target.tagName === "A" || e.target.closest("a") || e.target === navContainer || (navContainer && navContainer.contains(e.target));
   if (!skipPrevent) e.preventDefault();
   const now = Date.now();
   const gap = now - lastTap;
