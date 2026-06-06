@@ -596,8 +596,8 @@ document.addEventListener("touchend", function(e) {
 document.addEventListener("dblclick", function() {
   if (estado === "splash") irBienvenida();
 });
-fondo.addEventListener("click", function() {
-  if (tocado) return; // ignorar clicks sinteticos de touch
+document.getElementById("orbe-img").addEventListener("click", function() {
+  if (tocado) return;
   if (estado === "bienvenida") irBuscador();
 });
 
