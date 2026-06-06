@@ -199,6 +199,42 @@ body.buscando #orbe-img {
 .tarjeta-sustentabilidad .ficha-valor { font-size:12px; }
 
 /* Respuesta texto */
+/* Opción A — Burbuja chat */
+.respuesta-burbuja {
+  display:flex; gap:12px; align-items:flex-start;
+  padding:16px 0 8px;
+}
+.burbuja-avatar {
+  width:36px; height:36px; flex-shrink:0;
+  border-radius:50%; overflow:hidden;
+}
+.burbuja-avatar img { width:100%; height:100%; object-fit:cover; }
+.burbuja-texto {
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:4px 16px 16px 16px;
+  padding:14px 16px;
+  font-family:'Roboto Slab',serif; font-size:14px; font-weight:300;
+  color:rgba(255,255,255,0.8); line-height:1.7;
+  flex:1;
+}
+
+/* Opción B — Card de texto */
+.respuesta-card {
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px; padding:20px;
+  margin-bottom:4px;
+  font-family:'Roboto Slab',serif; font-size:14px; font-weight:300;
+  color:rgba(255,255,255,0.8); line-height:1.7;
+}
+.respuesta-card-label {
+  font-family:Roboto,sans-serif; font-size:8px; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase;
+  color:rgba(94,180,207,0.8); margin-bottom:10px;
+}
+
+/* Original — texto simple */
 .respuesta-texto {
   font-family:'Roboto Slab',serif; font-size:14px; font-weight:300;
   color:rgba(255,255,255,0.7); line-height:1.7;
@@ -359,7 +395,24 @@ function renderizar(data) {
   let html = "";
 
   if (data.respuesta_texto) {
-    html += '<div class="respuesta-texto">' + data.respuesta_texto + '</div>';
+    // Mostrar en ambos formatos para comparar
+    html += '<div style="margin-bottom:8px;display:flex;gap:8px;align-items:center;padding:0">' +
+      '<span style="font-family:Roboto,sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3)">Vista:</span>' +
+      '<button onclick="setVista('burbuja')" id="btn-burbuja" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:4px 12px;color:white;font-size:10px;cursor:pointer;">A — Burbuja</button>' +
+      '<button onclick="setVista('card')" id="btn-card" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:4px 12px;color:white;font-size:10px;cursor:pointer;">B — Card</button>' +
+    '</div>';
+
+    // Burbuja
+    html += '<div class="respuesta-burbuja" id="vista-burbuja">' +
+      '<div class="burbuja-avatar"><img src="orbe.png"></div>' +
+      '<div class="burbuja-texto">' + data.respuesta_texto + '</div>' +
+    '</div>';
+
+    // Card
+    html += '<div class="respuesta-card" id="vista-card" style="display:none">' +
+      '<div class="respuesta-card-label">Respuesta</div>' +
+      data.respuesta_texto +
+    '</div>';
   }
 
   if (data.materiales && data.materiales.length > 0) {
@@ -419,6 +472,11 @@ document.getElementById("input-consulta") && document.getElementById("input-cons
   }
 })();
 
+
+function setVista(v) {
+  document.getElementById('vista-burbuja').style.display = v === 'burbuja' ? 'flex' : 'none';
+  document.getElementById('vista-card').style.display = v === 'card' ? 'block' : 'none';
+}
 </script>
 </body>
 </html>
