@@ -197,12 +197,12 @@ body.buscando #header { opacity:1; pointer-events:all; }
 
 /* ── PANEL LATERAL ── */
 #menu-panel {
-  position:fixed; top:0; right:-320px; width:300px; height:100vh;
+  position:fixed; top:0; left:-320px; width:300px; height:100vh;
   background:#0e1a2e; border-left:1px solid rgba(255,255,255,0.08);
   z-index:200; transition:right 0.4s cubic-bezier(0.4,0,0.2,1);
   overflow-y:auto; padding:70px 28px 40px;
 }
-#menu-panel.abierto { right:0; }
+#menu-panel.abierto { left:0; }
 
 #menu-overlay {
   position:fixed; inset:0; background:rgba(0,0,0,0.5);
@@ -226,9 +226,9 @@ body.buscando #header { opacity:1; pointer-events:all; }
 }
 .menu-seccion:last-child { border-bottom:none; }
 .menu-seccion h3 {
-  font-family:Orbitron,sans-serif; font-size:9px; font-weight:700;
-  letter-spacing:3px; text-transform:uppercase;
-  color:rgba(94,180,207,0.8); margin-bottom:12px;
+  font-family:Roboto,sans-serif; font-size:12px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase;
+  color:rgba(255,255,255,0.9); margin-bottom:12px;
 }
 .menu-seccion p, .menu-seccion a {
   font-family:'Roboto Slab',serif; font-size:13px; font-weight:300;
@@ -436,11 +436,9 @@ body.buscando #header { opacity:1; pointer-events:all; }
 <!-- PANEL LATERAL -->
 <div id="menu-panel">
   <button class="menu-close" onclick="cerrarMenu()">✕</button>
-  <div class="menu-logo"><img src="fad-blanco.png" alt="FAD UNCuyo"></div>
-
   <div class="menu-seccion">
     <h3>Cargar material</h3>
-    <p>Cargá el material que analizaste en tu TPI.</p>
+    <p>Cargá el material que analizaste.</p>
     <a class="menu-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSdeQC03QDjA4bjF2XJT5Fn1W1JaHC_Bw9sBMdxfTcitjYq-WA/viewform" target="_blank">Ir al formulario →</a>
   </div>
 
@@ -470,7 +468,7 @@ body.buscando #header { opacity:1; pointer-events:all; }
   <div class="menu-seccion">
     <h3>Instalar app</h3>
     <p>Podés instalar la Materialoteca en tu celular para acceder más rápido, sin necesidad de abrir el navegador.</p>
-    <button class="menu-btn" id="btn-instalar-pwa" onclick="instalarPWA()">Instalar en este dispositivo</button>
+    <button class="menu-btn" id="btn-instalar-pwa" onclick="instalarPWA()" style="display:inline-block">Instalar en este dispositivo</button>
     <div class="ios-instrucciones" id="ios-instrucciones">
       <p>En Safari: tocá el botón <strong>Compartir</strong> ↑ y luego <strong>"Añadir a pantalla de inicio"</strong>.</p>
     </div>
@@ -488,7 +486,7 @@ body.buscando #header { opacity:1; pointer-events:all; }
 <div class="bienvenida-wrap" id="bienvenida-wrap">
   <p>Hola. Soy la <strong>Materialoteca</strong> de Tecnología.<br>Preguntame sobre cualquier material: qué es, para qué sirve, o cómo se compara con otros.</p>
   <div class="hint-tap">tocá la esfera para consultar</div>
-  <div style="margin-top:40px;text-align:center;"><img src="fad-blanco.png" style="height:28px;opacity:0.5"></div>
+  <div style="margin-top:60px;text-align:center;"><img src="fad-blanco.png" style="height:40px;opacity:0.6"></div>
 </div>
 <div class="buscador-wrap-outer" id="buscador-wrap">
 
