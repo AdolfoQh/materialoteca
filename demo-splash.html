@@ -136,6 +136,38 @@ body.buscando #orbe-img {
 /* Resultados */
 #resultados { padding:16px 20px 40px; }
 
+/* Solicitud de material */
+.solicitud-wrap {
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px; padding:20px;
+  margin-top:8px;
+}
+.solicitud-wrap p {
+  font-family:'Roboto Slab',serif; font-size:13px; font-weight:300;
+  color:rgba(255,255,255,0.6); line-height:1.6; margin-bottom:16px;
+}
+.solicitud-input {
+  width:100%; background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.15); border-radius:8px;
+  padding:12px 14px; color:white; font-size:14px;
+  font-family:'Roboto Slab',serif; font-weight:300;
+  outline:none; margin-bottom:12px; display:none;
+}
+.solicitud-input.visible { display:block; }
+.btn-solicitar {
+  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+  border-radius:8px; padding:10px 20px; color:white;
+  font-family:Roboto,sans-serif; font-size:12px; font-weight:700;
+  cursor:pointer; letter-spacing:1px;
+  transition:background 0.2s;
+}
+.btn-solicitar:hover { background:rgba(255,255,255,0.2); }
+.solicitud-ok {
+  font-family:'Roboto Slab',serif; font-size:13px; font-weight:300;
+  color:rgba(94,180,207,0.9); display:none; margin-top:8px;
+}
+
 /* Tarjeta */
 .tarjeta {
   background:rgba(255,255,255,0.04);
@@ -432,6 +464,16 @@ function renderizar(data) {
     });
   }
 
+  if (data.materiales && data.materiales.length === 0 && data.respuesta_texto) {
+    html += '<div class="solicitud-wrap">' +
+      '<p>Si te interesa que lo incorporemos a la Materialoteca, podés solicitarlo:</p>' +
+      '<button class="btn-solicitar" onclick="abrirSolicitud(this)">Solicitar material</button>' +
+      '<input class="solicitud-input" id="solicitud-input" placeholder="¿Qué material querés que incorporemos?" type="text">' +
+      '<button class="btn-solicitar" id="btn-enviar-solicitud" style="display:none" onclick="enviarSolicitud()">Enviar solicitud</button>' +
+      '<div class="solicitud-ok" id="solicitud-ok">✓ Solicitud enviada. La cátedra la va a revisar.</div>' +
+    '</div>';
+  }
+
   resultados.innerHTML = html;
 }
 
@@ -459,6 +501,37 @@ document.getElementById("input-consulta") && document.getElementById("input-cons
   }
 })();
 
+
+
+function abrirSolicitud(btn) {
+  btn.style.display = 'none';
+  document.getElementById('solicitud-input').classList.add('visible');
+  document.getElementById('btn-enviar-solicitud').style.display = 'inline-block';
+}
+
+async function enviarSolicitud() {
+  const input = document.getElementById('solicitud-input');
+  const material = input.value.trim();
+  if (!material) return;
+
+  const btn = document.getElementById('btn-enviar-solicitud');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  try {
+    await fetch('https://script.google.com/macros/s/AKfycbzC7OdC5ExvFJr-_JjYmXjT-3xKEamQAgRfgB-yHw-Wsnwb8WDr_EmV-giCdiHGXtA/exec', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ accion: 'solicitar', material: material })
+    });
+    btn.style.display = 'none';
+    input.style.display = 'none';
+    document.getElementById('solicitud-ok').style.display = 'block';
+  } catch(err) {
+    btn.textContent = 'Enviar solicitud';
+    btn.disabled = false;
+  }
+}
 
 </script>
 </body>
