@@ -628,8 +628,10 @@ document.addEventListener("touchend", function(e) {
     return;
   }
   if (estado === "bienvenida") {
-    const orbeImg = document.getElementById("orbe-img");
     if (e.target === document.getElementById('orbe-img')) irBuscador();
+  }
+  if (estado === "buscador") {
+    if (e.target.classList.contains("lightbox-trigger")) abrirLightbox(e.target.src);
   }
 }, { passive: false });
 
