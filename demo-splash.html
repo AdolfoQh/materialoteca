@@ -491,12 +491,14 @@ document.getElementById("input-consulta") && document.getElementById("input-cons
     document.getElementById("hint").classList.add("oculto");
     // no resetear inline styles de orbe
     document.getElementById("buscador-wrap").classList.add("visible");
+    document.getElementById("btn-giro").style.display = "none";
     estado = "buscador";
   } else if (s === "bienvenida") {
     document.body.classList.add("bienvenida");
     document.getElementById("texto-splash").classList.add("oculto");
     document.getElementById("hint").classList.add("oculto");
     document.getElementById("bienvenida-wrap").classList.add("visible");
+    document.getElementById("btn-giro").style.display = "none";
     estado = "bienvenida";
   }
 })();
