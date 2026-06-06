@@ -1,555 +1,813 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#132247">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Materialoteca · Tecnología 2 FAD UNCuyo</title>
-  <link rel="manifest" href="manifest.json">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --azul:   #132247;
-      --coral:  #FF5943;
-      --dorado: #EDC863;
-      --fondo:  #F4F2EE;
-      --blanco: #FFFFFF;
-      --texto:  #222222;
-      --sutil:  #888888;
-      --borde:  #E0DDD8;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#132247">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Materialoteca">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.jpg">
+<title>Materialoteca · FAD UNCuyo</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Slab:wght@300;400;700&family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { overflow:hidden; min-height:100vh; background:transparent; transition:background 1s ease; touch-action:manipulation; }
+body.bienvenida { background:#14233f; }
+body.buscando   { background:#14233f; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+#fondo {
+  touch-action:manipulation;
+  position:fixed; width:150vw; height:150vh; top:-25vh; left:-25vw;
+  background-image:url("fondo2.png"); background-size:cover; background-position:center;
+  will-change:transform; border-radius:0; cursor:pointer; z-index:5;
+  transition: width 1.1s cubic-bezier(0.4,0,0.2,1), height 1.1s cubic-bezier(0.4,0,0.2,1),
+    top 1.1s cubic-bezier(0.4,0,0.2,1), left 1.1s cubic-bezier(0.4,0,0.2,1),
+    border-radius 1.1s cubic-bezier(0.4,0,0.2,1), box-shadow 1.1s ease;
+}
+body.bienvenida #fondo { opacity:0; pointer-events:none; }
+body.buscando #fondo   { opacity:0; pointer-events:none; }
 
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: var(--fondo);
-      color: var(--texto);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+@keyframes orbFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
 
-    /* ── HEADER ── */
-    header {
-      background: var(--azul);
-      padding: 0 20px;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .header-marca {
-      font-family: 'Roboto Slab', serif;
-      font-weight: 700;
-      color: white;
-      font-size: 15px;
-    }
-    .header-sub {
-      font-size: 11px;
-      color: rgba(255,255,255,0.5);
-      font-weight: 300;
-    }
-    .header-nav button {
-      background: none;
-      border: none;
-      color: rgba(255,255,255,0.6);
-      font-size: 12px;
-      cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-family: 'Roboto', sans-serif;
-      transition: all 0.2s;
-    }
-    .header-nav button.active,
-    .header-nav button:hover {
-      color: white;
-      background: rgba(255,255,255,0.12);
-    }
+#orbe-img {
+  position:fixed;
+  width:160px; height:160px;
+  top:calc(35vh - 80px); left:calc(50vw - 80px);
+  z-index:15; opacity:0; pointer-events:none;
+  transition: opacity 0.8s ease 0.5s,
+    width 1s cubic-bezier(0.4,0,0.2,1),
+    height 1s cubic-bezier(0.4,0,0.2,1),
+    top 1s cubic-bezier(0.4,0,0.2,1),
+    left 1s cubic-bezier(0.4,0,0.2,1);
+  animation: orbFloat 4s ease-in-out infinite;
+  cursor:pointer;
+  filter: drop-shadow(0 0 20px rgba(94,180,207,0.4));
+  display:block;
+}
+body.bienvenida #orbe-img { opacity:1; pointer-events:all; animation:orbFloat 4s ease-in-out infinite; }
+body.buscando #orbe-img {
+  opacity:1; pointer-events:all;
+  width:72px; height:72px;
+  top:8px; left:calc(50vw - 36px);
+  z-index:5;
+  animation:none;
+}
 
-    /* ── MAIN ── */
-    main {
-      flex: 1;
-      max-width: 760px;
-      margin: 0 auto;
-      width: 100%;
-      padding: 28px 20px 80px;
-    }
+.texto-splash { position:fixed; bottom:16%; left:0; right:0; text-align:center; z-index:20; transition:opacity 0.5s ease,transform 0.6s ease; }
+.texto-splash.oculto { opacity:0; transform:translateY(-16px); pointer-events:none; }
+.texto-splash h1 { font-family:Orbitron,sans-serif; font-size:40px; font-weight:700; color:white; letter-spacing:-1px; text-shadow:0 4px 30px rgba(0,0,0,0.25); animation:flow 7s ease-in-out infinite; }
+.texto-splash p { margin-top:0; font-family:Roboto,sans-serif; font-weight:900; font-size:11px; letter-spacing:5px; text-transform:uppercase; color:rgba(255,255,255,0.85); animation:flow 7s ease-in-out infinite; animation-delay:0.1s; }
+@keyframes flow { 0%{transform:translate(0,0) rotate(0deg)} 25%{transform:translate(6px,-10px) rotate(0.5deg)} 50%{transform:translate(-4px,-16px) rotate(-0.5deg)} 75%{transform:translate(-8px,-6px) rotate(0.3deg)} 100%{transform:translate(0,0) rotate(0deg)} }
 
-    /* ── PANTALLAS ── */
-    .pantalla { display: none; }
-    .pantalla.visible { display: block; }
+.hint { position:fixed; bottom:36px; left:0; right:0; text-align:center; z-index:20; font-family:Roboto,sans-serif; font-weight:400; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.45); animation:pulso 2.5s ease-in-out infinite; transition:opacity 0.5s ease; }
+.hint.oculto { opacity:0 !important; pointer-events:none; animation:none; }
+@keyframes pulso { 0%,100%{opacity:.3} 50%{opacity:.8} }
 
-    /* ── CONSULTA ── */
-    .consulta-intro {
-      margin-bottom: 28px;
-    }
-    .consulta-intro h1 {
-      font-family: 'Roboto Slab', serif;
-      font-size: 22px;
-      color: var(--azul);
-      margin-bottom: 6px;
-    }
-    .consulta-intro p {
-      font-size: 13px;
-      color: var(--sutil);
-      line-height: 1.6;
-    }
+#btn-giro { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); z-index:99; background:rgba(255,255,255,0.15); color:white; border:none; padding:12px 24px; border-radius:30px; font-family:Roboto,sans-serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; display:none; }
 
-    /* Sugerencias */
-    .sugerencias {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 24px;
-    }
-    .sugerencia {
-      background: white;
-      border: 1.5px solid var(--borde);
-      border-radius: 20px;
-      padding: 7px 14px;
-      font-size: 12px;
-      color: var(--azul);
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: 'Roboto', sans-serif;
-    }
-    .sugerencia:hover {
-      border-color: var(--coral);
-      color: var(--coral);
-    }
+.bienvenida-wrap { position:fixed; top:calc(35vh + 100px); left:0; right:0; padding:0 36px; text-align:center; z-index:20; opacity:0; transform:translateY(20px); pointer-events:none; transition:opacity 0.7s ease 0.8s,transform 0.7s ease 0.8s; }
+.bienvenida-wrap.visible { opacity:1; transform:translateY(0); pointer-events:all; }
+.bienvenida-wrap p { font-family:'Roboto Slab',serif; font-weight:300; font-size:15px; line-height:1.7; color:rgba(255,255,255,0.75); }
+.bienvenida-wrap .hint-tap { margin-top:32px; font-family:Roboto,sans-serif; font-weight:400; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.3); animation:pulso 2.5s ease-in-out infinite; }
 
-    /* Input consulta */
-    .input-wrapper {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 32px;
-    }
-    .input-consulta {
-      flex: 1;
-      padding: 14px 18px;
-      border: 1.5px solid var(--borde);
-      border-radius: 4px;
-      font-family: 'Roboto', sans-serif;
-      font-size: 14px;
-      color: var(--texto);
-      background: white;
-      transition: border-color 0.2s;
-    }
-    .input-consulta:focus {
-      outline: none;
-      border-color: var(--azul);
-    }
-    .btn-consultar {
-      padding: 14px 24px;
-      background: var(--coral);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-family: 'Roboto Slab', serif;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.2s;
-      white-space: nowrap;
-    }
-    .btn-consultar:hover { background: #e04030; }
-    .btn-consultar:disabled { background: var(--sutil); cursor: not-allowed; }
+.buscador-wrap-outer {
+  position:fixed; top:120px; left:0; right:0; bottom:0;
+  padding:0; overflow-y:auto; opacity:0; transform:translateY(20px);
+  pointer-events:none; transition:opacity 0.7s ease 0.5s,transform 0.7s ease 0.5s; z-index:10;
+}
+.buscador-wrap-outer.visible { opacity:1; transform:translateY(0); pointer-events:all; }
 
-    /* Estado cargando */
-    .estado-cargando {
-      display: none;
-      align-items: center;
-      gap: 12px;
-      padding: 20px;
-      background: white;
-      border-radius: 4px;
-      margin-bottom: 24px;
-      border-left: 3px solid var(--coral);
-    }
-    .estado-cargando.visible { display: flex; }
-    .spinner {
-      width: 18px; height: 18px;
-      border: 2px solid var(--borde);
-      border-top-color: var(--coral);
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-      flex-shrink: 0;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .estado-cargando span {
-      font-size: 13px;
-      color: var(--sutil);
-    }
+/* Barra de búsqueda */
+.search-bar {
+  display:flex; gap:10px;
+  padding:16px 20px;
+  background:rgba(20,35,63,0.95);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  position:sticky; top:0; z-index:5;
+}
+.buscador {
+  flex:1; background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.15); border-radius:8px;
+  padding:12px 16px; color:white; font-size:14px; outline:none;
+  font-family:Roboto,sans-serif; font-weight:300;
+}
+.buscador::placeholder { color:rgba(255,255,255,0.3); }
+.buscador:focus { border-color:rgba(255,255,255,0.35); }
+.btn-buscar {
+  background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2);
+  border-radius:8px; padding:12px 18px; color:white;
+  font-family:Roboto,sans-serif; font-size:16px; font-weight:700;
+  cursor:pointer; letter-spacing:1px; white-space:nowrap;
+  transition:background 0.2s;
+}
+.btn-buscar:hover { background:rgba(255,255,255,0.2); }
 
-    /* Resultados */
-    #resultados { }
+/* Sugerencias */
+.sugerencias {
+  display:flex; flex-wrap:wrap; gap:8px;
+  padding:20px 20px 0;
+}
+.sugerencia {
+  background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+  border-radius:20px; padding:8px 16px; font-size:12px;
+  color:rgba(255,255,255,0.45); font-family:Roboto,sans-serif;
+  cursor:pointer; transition:all 0.2s;
+}
+.sugerencia:hover { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.8); }
 
-    .respuesta-texto {
-      font-size: 14px;
-      color: var(--texto);
-      line-height: 1.7;
-      margin-bottom: 24px;
-      padding: 16px 20px;
-      background: white;
-      border-radius: 4px;
-      border-left: 3px solid var(--azul);
-    }
+/* Label sección */
+.seccion-label {
+  padding:8px 20px 2px;
+  font-family:Roboto,sans-serif; font-size:9px; font-weight:700;
+  letter-spacing:3px; text-transform:uppercase;
+  color:rgba(255,255,255,0.25);
+}
 
-    .materiales-grid {
-      display: grid;
-      gap: 20px;
-      grid-template-columns: 1fr;
-    }
-    .materiales-grid.comparativa {
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    }
+/* Spinner */
+.spinner-wrap {
+  display:none; align-items:center; gap:12px;
+  padding:24px 20px;
+}
+.spinner-wrap.visible { display:flex; }
+.spinner {
+  width:18px; height:18px;
+  border:2px solid rgba(255,255,255,0.1);
+  border-top-color:rgba(255,255,255,0.5);
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.spinner-wrap span { font-family:Roboto,sans-serif; font-size:12px; color:rgba(255,255,255,0.4); letter-spacing:1px; }
 
-    /* Tarjeta material */
-    .tarjeta {
-      background: white;
-      border-radius: 4px;
-      overflow: hidden;
-      border: 1px solid var(--borde);
-      animation: fadeUp 0.4s ease forwards;
-      opacity: 0;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+/* Resultados */
+#resultados { padding:16px 20px 40px; }
 
-    .tarjeta-imagen {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      background: var(--fondo);
-      display: block;
-    }
-    .tarjeta-imagen-placeholder {
-      width: 100%;
-      height: 120px;
-      background: linear-gradient(135deg, #e8e4de 0%, #d4cfc8 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--sutil);
-      font-size: 11px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
 
-    .tarjeta-body { padding: 20px; }
+/* ── HEADER ── */
+#header {
+  position:fixed; top:0; left:0; right:0; height:56px;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 20px; z-index:300;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.5s ease 0.6s;
+}
+body.buscando #header { opacity:1; pointer-events:all; }
 
-    .tarjeta-familia {
-      font-size: 10px;
-      font-weight: 500;
-      color: var(--coral);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 6px;
-    }
-    .tarjeta-nombre {
-      font-family: 'Roboto Slab', serif;
-      font-size: 20px;
-      color: var(--azul);
-      margin-bottom: 12px;
-      line-height: 1.2;
-    }
-    .tarjeta-descripcion {
-      font-size: 13px;
-      color: var(--sutil);
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
+.header-logo {
+  font-family:Orbitron,sans-serif; font-size:13px; font-weight:700;
+  color:rgba(255,255,255,0.7); letter-spacing:1px;
+}
+.header-logo img { height:22px; vertical-align:middle; margin-right:8px; }
 
-    .tarjeta-ficha {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .ficha-item { }
-    .ficha-label {
-      font-size: 9px;
-      font-weight: 500;
-      color: var(--sutil);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 3px;
-    }
-    .ficha-valor {
-      font-size: 12px;
-      color: var(--texto);
-      line-height: 1.4;
-    }
+.btn-cargar {
+  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+  border-radius:20px; padding:7px 16px; color:white;
+  font-family:Roboto,sans-serif; font-size:11px; font-weight:700;
+  cursor:pointer; letter-spacing:1px; text-decoration:none;
+  transition:background 0.2s;
+}
+.btn-cargar:hover { background:rgba(255,255,255,0.2); }
 
-    .tarjeta-sustentabilidad {
-      background: var(--fondo);
-      border-radius: 3px;
-      padding: 12px 14px;
-      margin-bottom: 14px;
-    }
-    .tarjeta-sustentabilidad .ficha-label { margin-bottom: 4px; }
-    .tarjeta-sustentabilidad .ficha-valor { font-size: 12px; color: var(--sutil); }
+/* ── HAMBURGUESA CSS ── */
+#nav-container {
+  position:relative; width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:8px; align-self:center; flex-shrink:0;
+}
+.toggle-icon {
+  display:block; position:relative; width:100%;
+  margin:-2.2em auto 0 0.2em;
+  transition:margin 600ms; cursor:pointer;
+  transform:translateY(1.2em);
+}
+.toggle-icon .bar {
+  display:block; width:3.8em; height:0.2em; margin:0.9em;
+  border-right:2.8em solid rgba(255,255,255,0.8);
+  border-left:0.6em solid rgba(255,255,255,0.4);
+  box-sizing:border-box;
+  transition-property:transform,margin,border-right-color,box-shadow;
+  transition-duration:600ms;
+}
+.toggle-icon .bar:nth-of-type(1) { transition:opacity 300ms; }
+.toggle-icon .bar:nth-of-type(2) { transform:rotate(-180deg); }
 
-    .tarjeta-fuente {
-      font-size: 10px;
-      color: var(--borde);
-      text-align: right;
-    }
-    .tarjeta-fuente.propia { color: var(--dorado); }
+.pushed .toggle-icon { margin:-3.2em 0 0 0.7em; }
+.pushed .bar:nth-of-type(1) { opacity:0; }
+.pushed .bar:nth-of-type(2) {
+  margin-left:1.4em;
+  transform:rotate(-137deg) translateY(-1.5em);
+}
+.pushed .bar:nth-of-type(3) {
+  margin-left:0.5em;
+  transform:rotate(-42deg);
+}
 
-    /* Aclaracion */
-    .aclaracion {
-      margin-top: 16px;
-      padding: 12px 16px;
-      background: #fffbf0;
-      border-left: 3px solid var(--dorado);
-      border-radius: 2px;
-      font-size: 12px;
-      color: #888;
-      line-height: 1.5;
-    }
+/* ── PANEL LATERAL ── */
+#menu-panel {
+  position:fixed; top:0; left:-320px; width:300px; height:100vh;
+  background:#0e1a2e; border-left:1px solid rgba(255,255,255,0.08);
+  z-index:200; transition:right 0.4s cubic-bezier(0.4,0,0.2,1);
+  overflow-y:auto; padding:70px 28px 40px;
+}
+#menu-panel.abierto { left:0; }
 
-    /* ── CARGA ── */
-    .carga-intro {
-      margin-bottom: 28px;
-    }
-    .carga-intro h1 {
-      font-family: 'Roboto Slab', serif;
-      font-size: 22px;
-      color: var(--azul);
-      margin-bottom: 6px;
-    }
-    .carga-intro p {
-      font-size: 13px;
-      color: var(--sutil);
-      line-height: 1.6;
-    }
-    .carga-link {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 14px 28px;
-      background: var(--azul);
-      color: white;
-      text-decoration: none;
-      border-radius: 4px;
-      font-family: 'Roboto Slab', serif;
-      font-size: 14px;
-      transition: background 0.2s;
-    }
-    .carga-link:hover { background: #1a2f5e; }
+#menu-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.5);
+  z-index:199; opacity:0; pointer-events:none;
+  transition:opacity 0.4s ease;
+}
+#menu-overlay.visible { opacity:1; pointer-events:all; }
 
-    /* ── FOOTER ── */
-    footer {
-      background: var(--azul);
-      padding: 16px 20px;
-      text-align: center;
-    }
-    footer p {
-      font-size: 11px;
-      color: rgba(255,255,255,0.4);
-    }
+.menu-close {
+  position:absolute; top:18px; right:20px;
+  background:none; border:none; color:rgba(255,255,255,0.5);
+  font-size:22px; cursor:pointer; padding:4px 8px;
+}
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 500px) {
-      .materiales-grid.comparativa { grid-template-columns: 1fr; }
-      .tarjeta-ficha { grid-template-columns: 1fr; }
-      .btn-consultar { padding: 14px 16px; }
-    }
-  </style>
+.menu-logo { margin-bottom:32px; }
+.menu-logo img { height:28px; }
+
+.menu-seccion {
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  padding:20px 0;
+}
+.menu-seccion:last-child { border-bottom:none; }
+.menu-seccion h3 {
+  font-family:Roboto,sans-serif; font-size:12px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase;
+  color:rgba(94,180,207,0.8); margin-bottom:12px;
+}
+.menu-seccion p, .menu-seccion a {
+  font-family:'Roboto Slab',serif; font-size:13px; font-weight:300;
+  color:rgba(255,255,255,0.65); line-height:1.7; text-decoration:none;
+  display:block;
+}
+.menu-seccion a:hover { color:white; }
+
+.menu-btn {
+  display:inline-block; margin-top:14px;
+  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+  border-radius:20px; padding:9px 20px; color:white;
+  font-family:Roboto,sans-serif; font-size:11px; font-weight:700;
+  cursor:pointer; letter-spacing:1px; text-decoration:none;
+  transition:background 0.2s;
+}
+.menu-btn:hover { background:rgba(255,255,255,0.2); }
+
+/* Sugerencias form */
+.menu-form { display:none; margin-top:14px; }
+.menu-form.visible { display:block; }
+.menu-input {
+  width:100%; background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.15); border-radius:8px;
+  padding:10px 14px; color:white; font-size:13px;
+  font-family:'Roboto Slab',serif; font-weight:300;
+  outline:none; margin-bottom:10px;
+}
+.menu-ok {
+  font-family:'Roboto Slab',serif; font-size:12px; font-weight:300;
+  color:rgba(94,180,207,0.9); display:none; margin-top:8px;
+}
+
+/* Instalar PWA */
+#btn-instalar-pwa {
+  display:none; margin-top:14px;
+}
+.ios-instrucciones {
+  margin-top:14px; display:none;
+  background:rgba(255,255,255,0.04); border-radius:8px; padding:14px;
+}
+.ios-instrucciones p {
+  font-family:Roboto,sans-serif; font-size:12px; font-weight:300;
+  color:rgba(255,255,255,0.6); line-height:1.6;
+}
+
+/* Solicitud de material */
+.solicitud-wrap {
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px; padding:20px;
+  margin-top:8px;
+}
+.solicitud-wrap p {
+  font-family:'Roboto Slab',serif; font-size:13px; font-weight:300;
+  color:rgba(255,255,255,0.6); line-height:1.6; margin-bottom:16px;
+}
+.solicitud-input {
+  width:100%; background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.15); border-radius:8px;
+  padding:12px 14px; color:white; font-size:14px;
+  font-family:'Roboto Slab',serif; font-weight:300;
+  outline:none; margin-bottom:12px; display:none;
+}
+.solicitud-input.visible { display:block; }
+.btn-solicitar {
+  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+  border-radius:8px; padding:10px 20px; color:white;
+  font-family:Roboto,sans-serif; font-size:12px; font-weight:700;
+  cursor:pointer; letter-spacing:1px;
+  transition:background 0.2s;
+}
+.btn-solicitar:hover { background:rgba(255,255,255,0.2); }
+.solicitud-ok {
+  font-family:'Roboto Slab',serif; font-size:13px; font-weight:300;
+  color:rgba(94,180,207,0.9); display:none; margin-top:8px;
+}
+
+/* Tarjeta */
+.tarjeta {
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px; overflow:hidden;
+  margin-bottom:20px;
+  animation:fadeUp 0.4s ease forwards; opacity:0;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.tarjeta-imagen {
+  width:100%; height:200px;
+  object-fit:cover; display:block;
+  background:rgba(255,255,255,0.03);
+}
+.tarjeta-imagen-placeholder {
+  width:100%; height:140px;
+  background:rgba(255,255,255,0.03);
+  display:flex; align-items:center; justify-content:center;
+  color:rgba(255,255,255,0.15); font-size:10px; letter-spacing:2px; text-transform:uppercase;
+  font-family:Roboto,sans-serif;
+}
+
+.tarjeta-body { padding:20px; }
+
+.tarjeta-familia {
+  font-family:Roboto,sans-serif; font-size:9px; font-weight:700;
+  letter-spacing:3px; text-transform:uppercase;
+  color:rgba(94,180,207,0.8); margin-bottom:6px;
+}
+.tarjeta-nombre {
+  font-family:'Roboto Slab',serif; font-size:24px; font-weight:700;
+  color:white; margin-bottom:10px; line-height:1.2;
+}
+.tarjeta-descripcion {
+  font-family:'Roboto Slab',serif; font-size:13px; font-weight:300;
+  color:rgba(255,255,255,0.6); line-height:1.7; margin-bottom:20px;
+}
+
+.tarjeta-ficha {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:16px; margin-bottom:16px;
+}
+.ficha-item {}
+.ficha-label {
+  font-family:Roboto,sans-serif; font-size:8px; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase;
+  color:rgba(255,255,255,0.3); margin-bottom:4px;
+}
+.ficha-valor {
+  font-family:Roboto,sans-serif; font-size:12px; font-weight:300;
+  color:rgba(255,255,255,0.7); line-height:1.5;
+}
+
+.tarjeta-sustentabilidad {
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:8px; padding:14px 16px; margin-top:4px;
+}
+.tarjeta-sustentabilidad .ficha-label { margin-bottom:6px; }
+.tarjeta-sustentabilidad .ficha-valor { font-size:12px; }
+
+/* Respuesta texto */
+/* Opción A — Burbuja chat */
+.respuesta-burbuja {
+  margin-bottom:20px;
+  display:flex; gap:12px; align-items:flex-start;
+  padding:16px 0 8px;
+}
+.burbuja-avatar {
+  width:36px; height:36px; flex-shrink:0;
+  border-radius:50%; overflow:hidden;
+}
+.burbuja-avatar img { width:100%; height:100%; object-fit:cover; }
+.burbuja-texto {
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:4px 16px 16px 16px;
+  padding:14px 16px;
+  font-family:'Roboto Slab',serif; font-size:14px; font-weight:300;
+  color:rgba(255,255,255,0.8); line-height:1.7;
+  flex:1;
+}
+
+/* Opción B — Card de texto */
+.respuesta-card {
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px; padding:20px;
+  margin-bottom:4px;
+  font-family:'Roboto Slab',serif; font-size:14px; font-weight:300;
+  color:rgba(255,255,255,0.8); line-height:1.7;
+}
+.respuesta-card-label {
+  font-family:Roboto,sans-serif; font-size:8px; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase;
+  color:rgba(94,180,207,0.8); margin-bottom:10px;
+}
+
+/* Original — texto simple */
+.respuesta-texto {
+  font-family:'Roboto Slab',serif; font-size:14px; font-weight:300;
+  color:rgba(255,255,255,0.7); line-height:1.7;
+  padding:16px 0 8px;
+}
+</style>
+
 </head>
 <body>
+<div id="fondo"></div>
 
-<header>
-  <div>
-    <div class="header-marca">Materialoteca</div>
-    <div class="header-sub">Tecnología 2 · FAD UNCuyo</div>
+<!-- HEADER (visible en buscador) -->
+<div id="header">
+  <div id="nav-container" onclick="toggleMenu()">
+    <span class="toggle-icon">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </span>
   </div>
-  <nav class="header-nav">
-    <button class="active" onclick="mostrarPantalla('consulta', this)">Consultar</button>
-    <button onclick="mostrarPantalla('carga', this)">Cargar</button>
-  </nav>
-</header>
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeQC03QDjA4bjF2XJT5Fn1W1JaHC_Bw9sBMdxfTcitjYq-WA/viewform" target="_blank" id="btn-upload" style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;opacity:0.8"><img src="upload.png" style="height:26px;pointer-events:none"></a>
+</div>
 
-<main>
+<!-- OVERLAY -->
+<div id="menu-overlay" onclick="cerrarMenu()"></div>
 
-  <!-- ── PANTALLA CONSULTA ── -->
-  <div class="pantalla visible" id="pantalla-consulta">
-    <div class="consulta-intro">
-      <h1>¿Qué material necesitás?</h1>
-      <p>Preguntá sobre un material, describí para qué lo necesitás, o comparé entre opciones.</p>
-    </div>
-
-    <div class="sugerencias">
-      <button class="sugerencia" onclick="usarSugerencia(this)">¿Qué es el cartón corrugado?</button>
-      <button class="sugerencia" onclick="usarSugerencia(this)">Material rígido para packaging sustentable</button>
-      <button class="sugerencia" onclick="usarSugerencia(this)">Comparar cartón y PET</button>
-      <button class="sugerencia" onclick="usarSugerencia(this)">Material liviano para etiquetas</button>
-    </div>
-
-    <div class="input-wrapper">
-      <input type="text" class="input-consulta" id="input-consulta"
-        placeholder="Ej: necesito algo rígido y reciclable para una caja de producto..."
-        onkeydown="if(event.key==='Enter') consultar()">
-      <button class="btn-consultar" id="btn-consultar" onclick="consultar()">Consultar</button>
-    </div>
-
-    <div class="estado-cargando" id="estado-cargando">
-      <div class="spinner"></div>
-      <span>Consultando la materialoteca...</span>
-    </div>
-
-    <div id="resultados"></div>
+<!-- PANEL LATERAL -->
+<div id="menu-panel">
+  <div class="menu-seccion">
+    <h3>Cargar material</h3>
+    <p>Cargá el material que analizaste.</p>
+    <a class="menu-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSdeQC03QDjA4bjF2XJT5Fn1W1JaHC_Bw9sBMdxfTcitjYq-WA/viewform" target="_blank">Ir al formulario →</a>
   </div>
 
-  <!-- ── PANTALLA CARGA ── -->
-  <div class="pantalla" id="pantalla-carga">
-    <div class="carga-intro">
-      <h1>Cargar un material</h1>
-      <p>Completá la ficha del material que analizaste en tu TPI. La cátedra revisará la información antes de que quede disponible en la materialoteca.</p>
-      <p style="margin-top: 10px;">Necesitás el código de acceso que te dio la cátedra.</p>
-      <a class="carga-link" href="https://docs.google.com/forms/d/e/1FAIpQLSdeQC03QDjA4bjF2XJT5Fn1W1JaHC_Bw9sBMdxfTcitjYq-WA/viewform?usp=header" target="_blank">Ir al formulario de carga →</a>
+  <div class="menu-seccion">
+    <h3>Sugerencias</h3>
+    <p>¿Querés sugerir un material o hacernos un comentario?</p>
+    <button class="menu-btn" onclick="mostrarFormSugerencia()">Enviar sugerencia</button>
+    <div class="menu-form" id="form-sugerencia">
+      <input class="menu-input" id="sug-nombre" placeholder="Tu nombre" type="text">
+      <input class="menu-input" id="sug-contacto" placeholder="Email o teléfono" type="text">
+      <input class="menu-input" id="sug-texto" placeholder="Tu sugerencia o material" type="text">
+      <button class="menu-btn" onclick="enviarSugerencia()">Enviar</button>
+      <div class="menu-ok" id="sug-ok">✓ ¡Gracias! La Materialoteca la va a revisar.</div>
     </div>
   </div>
 
-</main>
+  <div class="menu-seccion">
+    <h3>Quiénes somos</h3>
+    <p>Esta Materialoteca está construida a partir del análisis de materiales realizado por estudiantes de la cátedra Tecnología 2 – Insumos, con el soporte del Centro de Investigación en Tecnologías Emergentes (CiFAD TE) de la Facultad de Artes y Diseño de la Universidad Nacional de Cuyo (FAD–UNCUYO).</p>
+  </div>
 
-<footer>
-  <p>Materialoteca · Tecnología 2 – Insumos · FAD UNCuyo · 2026</p>
-</footer>
+  <div class="menu-seccion">
+    <h3>Contacto</h3>
+    <a href="mailto:citech@gm.fad.uncu.edu.ar">citech@gm.fad.uncu.edu.ar</a>
+  </div>
 
+  <div class="menu-seccion">
+    <h3>Instalar app</h3>
+    <p>Podés instalar la Materialoteca en tu celular para acceder más rápido, sin necesidad de abrir el navegador.</p>
+    <button class="menu-btn" id="btn-instalar-pwa" onclick="instalarPWA()" style="display:inline-block">Instalar en este dispositivo</button>
+    <div class="ios-instrucciones" id="ios-instrucciones">
+      <p>En Safari: tocá el botón <strong>Compartir</strong> ↑ y luego <strong>"Añadir a pantalla de inicio"</strong>.</p>
+    </div>
+  </div>
+
+</div>
+
+<img id="orbe-img" src="orbe-animada.gif" alt="">
+<div class="texto-splash" id="texto-splash">
+  <h1>materialoteca</h1>
+  <p>FAD &ndash; UNCUYO</p>
+</div>
+<div class="hint" id="hint">doble tap para entrar</div>
+<button id="btn-giro" onclick="pedirPermiso()">activar movimiento</button>
+<div class="bienvenida-wrap" id="bienvenida-wrap">
+  <p>Hola. Soy la <strong>Materialoteca</strong> de Tecnología.<br>Preguntame sobre cualquier material: qué es, para qué sirve, o cómo se compara con otros.</p>
+  <div class="hint-tap">tocá la esfera para consultar</div>
+  <div style="margin-top:100px;text-align:center;"><img src="fad-blanco.png" style="height:40px;opacity:0.6"></div>
+</div>
+<div class="buscador-wrap-outer" id="buscador-wrap">
+
+  <div class="search-bar">
+    <input class="buscador" id="input-consulta" type="text" placeholder="¿Qué material necesitás?">
+    <button class="btn-buscar" id="btn-consultar" onclick="consultar()">Consultar</button>
+  </div>
+
+  <div class="seccion-label">Sugerencias</div>
+  <div class="sugerencias">
+    <button class="sugerencia" onclick="usarSugerencia(this)">¿Qué es el cartón corrugado?</button>
+    <button class="sugerencia" onclick="usarSugerencia(this)">Material rígido y reciclable</button>
+    <button class="sugerencia" onclick="usarSugerencia(this)">Comparar cartón y PET</button>
+    <button class="sugerencia" onclick="usarSugerencia(this)">Material liviano para etiquetas</button>
+  </div>
+
+  <div class="spinner-wrap" id="spinner">
+    <div class="spinner"></div>
+    <span>Consultando...</span>
+  </div>
+
+  <div id="resultados"></div>
+
+</div>
 <script>
-  const WEBHOOK_URL = "https://materialoteca.vercel.app/api/consulta";
+const fondo = document.getElementById("fondo");
+const MAX = 80;
+let estado = sessionStorage.getItem("estado") || "splash";
 
-  function mostrarPantalla(id, btn) {
-    document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('visible'));
-    document.getElementById('pantalla-' + id).classList.add('visible');
-    document.querySelectorAll('.header-nav button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+function mover(px, py) {
+  if (estado !== "splash") return;
+  fondo.style.transform = "translate("+((px/100-0.5)*MAX*2)+"px,"+((py/100-0.5)*MAX*2)+"px)";
+}
+document.addEventListener("mousemove", function(e) {
+  mover((e.clientX/window.innerWidth)*100, (e.clientY/window.innerHeight)*100);
+});
+function activarGiro() {
+  window.addEventListener("deviceorientation", function(e) {
+    if (e.gamma===null) return;
+    mover(Math.max(0,Math.min(100,50+e.gamma*1.5)), Math.max(0,Math.min(100,50+(e.beta-45))));
+  });
+}
+function pedirPermiso() {
+  DeviceOrientationEvent.requestPermission().then(function(s) {
+    if (s==="granted") { document.getElementById("btn-giro").style.display="none"; activarGiro(); }
+  });
+}
+if (typeof DeviceOrientationEvent!=="undefined" && typeof DeviceOrientationEvent.requestPermission==="function") {
+  document.getElementById("btn-giro").style.display="block";
+} else if (window.DeviceOrientationEvent) {
+  activarGiro();
+}
+
+function irBienvenida() {
+  if (estado!=="splash") return;
+  estado = "bienvenida";
+  sessionStorage.setItem("estado","bienvenida");
+  fondo.style.transform = ""; fondo.style.willChange = "background-position";
+  document.body.classList.add("bienvenida");
+  document.getElementById("texto-splash").classList.add("oculto");
+  document.getElementById("hint").classList.add("oculto");
+  document.getElementById("btn-giro").style.display = "none";
+  setTimeout(function() { document.getElementById("bienvenida-wrap").classList.add("visible"); }, 900);
+}
+
+function irBuscador() {
+  if (estado!=="bienvenida") return;
+  estado = "buscador";
+  sessionStorage.setItem("estado","buscador");
+  document.body.classList.add("buscando");
+  document.getElementById("bienvenida-wrap").style.opacity = "0";
+  document.getElementById("bienvenida-wrap").style.pointerEvents = "none";
+  setTimeout(function() { document.getElementById("buscador-wrap").classList.add("visible"); }, 400);
+}
+
+// UN SOLO listener touch
+let lastTap = 0;
+let tocado = false;
+document.addEventListener("touchend", function(e) {
+  const navContainer = document.getElementById("nav-container");
+  const skipPrevent = e.target.tagName === "BUTTON" || e.target.tagName === "INPUT" || e.target.tagName === "A" || e.target.closest("a") || e.target === navContainer || (navContainer && navContainer.contains(e.target));
+  if (!skipPrevent) e.preventDefault();
+  const now = Date.now();
+  const gap = now - lastTap;
+  lastTap = now;
+  tocado = true;
+  setTimeout(function(){ tocado = false; }, 500);
+  if (estado === "splash") {
+    if (gap < 300) irBienvenida();
+    return;
+  }
+  if (estado === "bienvenida") {
+    const orbeImg = document.getElementById("orbe-img");
+    if (e.target === document.getElementById('orbe-img')) irBuscador();
+  }
+}, { passive: false });
+
+// Desktop solamente
+document.addEventListener("dblclick", function() {
+  if (estado === "splash") irBienvenida();
+});
+fondo.addEventListener("click", function() {
+  if (tocado) return; // ignorar clicks sinteticos de touch
+  if (estado === "bienvenida") irBuscador();
+});
+
+function usarSugerencia(el) {
+  document.getElementById("input-consulta").value = el.textContent;
+  consultar();
+}
+
+async function consultar() {
+  const input = document.getElementById("input-consulta");
+  const consulta = input.value.trim();
+  if (!consulta) return;
+
+  const btn = document.getElementById("btn-consultar");
+  const spinner = document.getElementById("spinner");
+  const resultados = document.getElementById("resultados");
+
+  btn.disabled = true;
+  spinner.classList.add("visible");
+  resultados.innerHTML = "";
+
+  try {
+    const res = await fetch("https://materialoteca.vercel.app/api/consulta?consulta=" + encodeURIComponent(consulta));
+    const texto = await res.text();
+    const data = JSON.parse(texto.replace(/```json|```/g,"").trim());
+    renderizar(data);
+  } catch(err) {
+    resultados.innerHTML = '<div class="respuesta-texto">No se pudo conectar. Revisá tu conexión.</div>';
+  } finally {
+    btn.disabled = false;
+    spinner.classList.remove("visible");
+  }
+}
+
+function renderizar(data) {
+  const resultados = document.getElementById("resultados");
+  let html = "";
+
+  if (data.respuesta_texto) {
+    html += '<div class="respuesta-burbuja">' +
+      '<div class="burbuja-avatar"><img src="orbe-animada.gif"></div>' +
+      '<div class="burbuja-texto">' + data.respuesta_texto + '</div>' +
+    '</div>';
   }
 
-  function usarSugerencia(btn) {
-    document.getElementById('input-consulta').value = btn.textContent;
-    consultar();
-  }
+  if (data.materiales && data.materiales.length > 0) {
+    data.materiales.forEach(function(m, i) {
+      html += '<div class="tarjeta" style="animation-delay:' + (i*0.1) + 's">';
 
-  async function consultar() {
-    const input = document.getElementById('input-consulta');
-    const consulta = input.value.trim();
-    if (!consulta) return;
+      if (m.imagen_url && !m.imagen_url.includes("example.com")) {
+        html += "<img class=\"tarjeta-imagen\" src=\"" + m.imagen_url + "\" onerror=\"this.style.display='none'\">";
+      } else {
+        html += '<div class="tarjeta-imagen-placeholder">sin imagen</div>';
+      }
 
-    const btn = document.getElementById('btn-consultar');
-    const cargando = document.getElementById('estado-cargando');
-    const resultados = document.getElementById('resultados');
+      html += '<div class="tarjeta-body">';
+      html += '<div class="tarjeta-familia">' + (m.familia||"") + '</div>';
+      html += '<div class="tarjeta-nombre">' + (m.nombre||"") + '</div>';
+      html += '<div class="tarjeta-descripcion">' + (m.descripcion||"") + '</div>';
 
-    btn.disabled = true;
-    cargando.classList.add('visible');
-    resultados.innerHTML = '';
-
-    try {
-      const res = await fetch(WEBHOOK_URL + '?consulta=' + encodeURIComponent(consulta));
-
-      const texto = await res.text();
-
-      // Limpiar posibles backticks de markdown
-      const limpio = texto.replace(/```json|```/g, '').trim();
-      const data = JSON.parse(limpio);
-
-      renderizarRespuesta(data);
-
-    } catch (err) {
-      resultados.innerHTML = `
-        <div class="respuesta-texto" style="border-left-color: var(--coral)">
-          No se pudo conectar con la materialoteca. Revisá tu conexión e intentá de nuevo.
-        </div>`;
-    } finally {
-      btn.disabled = false;
-      cargando.classList.remove('visible');
-    }
-  }
-
-  function renderizarRespuesta(data) {
-    const resultados = document.getElementById('resultados');
-    let html = '';
-
-    if (data.respuesta_texto) {
-      html += `<div class="respuesta-texto">${data.respuesta_texto}</div>`;
-    }
-
-    if (data.materiales && data.materiales.length > 0) {
-      const esComparativa = data.tipo === 'comparativa' && data.materiales.length > 1;
-      html += `<div class="materiales-grid ${esComparativa ? 'comparativa' : ''}">`;
-
-      data.materiales.forEach((m, i) => {
-        const delay = i * 0.1;
-        html += `
-          <div class="tarjeta" style="animation-delay: ${delay}s">
-            ${m.imagen_url && !m.imagen_url.includes('example.com')
-              ? `<img class="tarjeta-imagen" src="${m.imagen_url}" alt="${m.nombre}" onerror="this.style.display='none'">`
-              : `<div class="tarjeta-imagen-placeholder">Sin imagen</div>`
-            }
-            <div class="tarjeta-body">
-              <div class="tarjeta-familia">${m.familia || ''}</div>
-              <div class="tarjeta-nombre">${m.nombre || ''}</div>
-              <div class="tarjeta-descripcion">${m.descripcion || ''}</div>
-
-              <div class="tarjeta-ficha">
-                ${m.propiedades_clave ? `
-                  <div class="ficha-item">
-                    <div class="ficha-label">Propiedades</div>
-                    <div class="ficha-valor">${m.propiedades_clave}</div>
-                  </div>` : ''}
-                ${m.usos ? `
-                  <div class="ficha-item">
-                    <div class="ficha-label">Usos en diseño</div>
-                    <div class="ficha-valor">${m.usos}</div>
-                  </div>` : ''}
-                ${m.ventajas ? `
-                  <div class="ficha-item">
-                    <div class="ficha-label">Ventajas</div>
-                    <div class="ficha-valor">${m.ventajas}</div>
-                  </div>` : ''}
-                ${m.limitaciones ? `
-                  <div class="ficha-item">
-                    <div class="ficha-label">Limitaciones</div>
-                    <div class="ficha-valor">${m.limitaciones}</div>
-                  </div>` : ''}
-              </div>
-
-              ${m.sustentabilidad ? `
-                <div class="tarjeta-sustentabilidad">
-                  <div class="ficha-label">Sustentabilidad</div>
-                  <div class="ficha-valor">${m.sustentabilidad}</div>
-                </div>` : ''}
-
-              <div class="tarjeta-fuente ${m.fuente === 'conocimiento_propio' ? 'propia' : ''}">
-                ${m.fuente === 'conocimiento_propio' ? '⚠ Información general · no analizada por ningún grupo' : '✓ Materialoteca FAD UNCuyo'}
-              </div>
-            </div>
-          </div>`;
-      });
-
+      html += '<div class="tarjeta-ficha">';
+      if (m.propiedades_clave) html += '<div class="ficha-item"><div class="ficha-label">Propiedades</div><div class="ficha-valor">' + m.propiedades_clave + '</div></div>';
+      if (m.usos)             html += '<div class="ficha-item"><div class="ficha-label">Usos en diseño</div><div class="ficha-valor">' + m.usos + '</div></div>';
+      if (m.ventajas)         html += '<div class="ficha-item"><div class="ficha-label">Ventajas</div><div class="ficha-valor">' + m.ventajas + '</div></div>';
+      if (m.limitaciones)     html += '<div class="ficha-item"><div class="ficha-label">Limitaciones</div><div class="ficha-valor">' + m.limitaciones + '</div></div>';
       html += '</div>';
-    }
 
-    if (data.aclaracion) {
-      html += `<div class="aclaracion">${data.aclaracion}</div>`;
-    }
+      if (m.sustentabilidad) {
+        html += '<div class="tarjeta-sustentabilidad"><div class="ficha-label">Sustentabilidad</div><div class="ficha-valor">' + m.sustentabilidad + '</div></div>';
+      }
 
-    resultados.innerHTML = html;
+      html += '</div></div>';
+    });
   }
 
-  // PWA: registrar service worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+  if (data.materiales && data.materiales.length === 0 && data.respuesta_texto) {
+    html += '<div class="solicitud-wrap">' +
+      '<p>Si te interesa que lo incorporemos a la Materialoteca, podés solicitarlo:</p>' +
+      '<button class="btn-solicitar" onclick="abrirSolicitud(this)">Solicitar material</button>' +
+      '<input class="solicitud-input" id="solicitud-input" placeholder="¿Qué material querés que incorporemos?" type="text">' +
+      '<button class="btn-solicitar" id="btn-enviar-solicitud" style="display:none" onclick="enviarSolicitud()">Enviar solicitud</button>' +
+      '<div class="solicitud-ok" id="solicitud-ok">✓ Solicitud enviada. La Materialoteca la va a revisar. ¡Gracias!</div>' +
+    '</div>';
   }
+
+  resultados.innerHTML = html;
+}
+
+document.getElementById("input-consulta") && document.getElementById("input-consulta").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") consultar();
+});
+
+
+// Restaurar estado al recargar
+(function() {
+  const s = sessionStorage.getItem("estado");
+  if (s === "buscador") {
+    document.body.classList.add("bienvenida","buscando");
+    document.getElementById("texto-splash").classList.add("oculto");
+    document.getElementById("hint").classList.add("oculto");
+    // no resetear inline styles de orbe
+    document.getElementById("buscador-wrap").classList.add("visible");
+    document.getElementById("btn-giro").style.display = "none";
+    estado = "buscador";
+  } else if (s === "bienvenida") {
+    document.body.classList.add("bienvenida");
+    document.getElementById("texto-splash").classList.add("oculto");
+    document.getElementById("hint").classList.add("oculto");
+    document.getElementById("bienvenida-wrap").classList.add("visible");
+    document.getElementById("btn-giro").style.display = "none";
+    estado = "bienvenida";
+  }
+})();
+
+
+
+function abrirSolicitud(btn) {
+  btn.style.display = 'none';
+  document.getElementById('solicitud-input').classList.add('visible');
+  document.getElementById('btn-enviar-solicitud').style.display = 'inline-block';
+}
+
+async function enviarSolicitud() {
+  const input = document.getElementById('solicitud-input');
+  const material = input.value.trim();
+  if (!material) return;
+
+  const btn = document.getElementById('btn-enviar-solicitud');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  try {
+    await fetch('https://script.google.com/macros/s/AKfycbzC7OdC5ExvFJr-_JjYmXjT-3xKEamQAgRfgB-yHw-Wsnwb8WDr_EmV-giCdiHGXtA/exec', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ accion: 'solicitar', material: material })
+    });
+    btn.style.display = 'none';
+    input.style.display = 'none';
+    document.getElementById('solicitud-ok').style.display = 'block';
+  } catch(err) {
+    btn.textContent = 'Enviar solicitud';
+    btn.disabled = false;
+  }
+}
+
+
+// ── MENÚ ──
+function toggleMenu() {
+  const panel = document.getElementById('menu-panel');
+  const overlay = document.getElementById('menu-overlay');
+  const nav = document.getElementById('nav-container');
+  const abierto = panel.classList.contains('abierto');
+  if (abierto) {
+    panel.classList.remove('abierto');
+    overlay.classList.remove('visible');
+    nav.classList.remove('pushed');
+  } else {
+    panel.classList.add('abierto');
+    overlay.classList.add('visible');
+    nav.classList.add('pushed');
+  }
+}
+function cerrarMenu() {
+  document.getElementById('menu-panel').classList.remove('abierto');
+  document.getElementById('menu-overlay').classList.remove('visible');
+  document.getElementById('nav-container').classList.remove('pushed');
+}
+
+function mostrarFormSugerencia() {
+  document.getElementById('form-sugerencia').classList.add('visible');
+}
+
+async function enviarSugerencia() {
+  const nombre = document.getElementById('sug-nombre').value.trim();
+  const contacto = document.getElementById('sug-contacto').value.trim();
+  const texto = document.getElementById('sug-texto').value.trim();
+  if (!texto) return;
+  try {
+    await fetch('https://script.google.com/macros/s/AKfycbzC7OdC5ExvFJr-_JjYmXjT-3xKEamQAgRfgB-yHw-Wsnwb8WDr_EmV-giCdiHGXtA/exec', {
+      method:'POST', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ accion:'sugerencia', nombre, contacto, texto })
+    });
+    document.getElementById('sug-ok').style.display = 'block';
+    document.getElementById('form-sugerencia').querySelectorAll('input,button').forEach(el => el.style.display = 'none');
+  } catch(err) {}
+}
+
+// ── PWA INSTALL ──
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('btn-instalar-pwa').style.display = 'inline-block';
+});
+
+function instalarPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+  }
+}
+
+// Mostrar instrucciones iOS si es Safari
+const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const esSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+if (esIOS && esSafari) {
+  document.getElementById('ios-instrucciones').style.display = 'block';
+}
+
 </script>
-
 </body>
 </html>
