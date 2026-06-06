@@ -2,7 +2,7 @@
   "name": "Materialoteca · Tecnología 2 FAD UNCuyo",
   "short_name": "Materialoteca",
   "description": "Consultor de materiales para diseño gráfico",
-  "start_url": "/",
+  "start_url": "/materialoteca/",
   "display": "standalone",
   "background_color": "#132247",
   "theme_color": "#132247",
