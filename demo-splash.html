@@ -65,7 +65,7 @@ body.buscando #orbe-img {
 .bienvenida-wrap .hint-tap { margin-top:32px; font-family:Roboto,sans-serif; font-weight:400; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.3); animation:pulso 2.5s ease-in-out infinite; }
 
 .buscador-wrap-outer {
-  position:fixed; top:56px; left:0; right:0; bottom:0;
+  position:fixed; top:56px; padding-top:64px; left:0; right:0; bottom:0;
   padding:0; overflow-y:auto; opacity:0; transform:translateY(20px);
   pointer-events:none; transition:opacity 0.7s ease 0.5s,transform 0.7s ease 0.5s; z-index:10;
 }
@@ -139,7 +139,7 @@ body.buscando #orbe-img {
 
 /* ── HEADER ── */
 #header {
-  position:fixed; top:0; left:0; right:0; height:56px;
+  position:fixed; top:0; left:0; right:0; height:56px; z-index:250;
   display:flex; align-items:center; justify-content:space-between;
   padding:0 20px; z-index:50;
   opacity:0; pointer-events:none;
@@ -228,7 +228,7 @@ body.buscando #header { opacity:1; pointer-events:all; }
 .menu-seccion h3 {
   font-family:Roboto,sans-serif; font-size:12px; font-weight:700;
   letter-spacing:1px; text-transform:uppercase;
-  color:rgba(255,255,255,0.9); margin-bottom:12px;
+  color:rgba(94,180,207,0.8); margin-bottom:12px;
 }
 .menu-seccion p, .menu-seccion a {
   font-family:'Roboto Slab',serif; font-size:13px; font-weight:300;
@@ -427,7 +427,7 @@ body.buscando #header { opacity:1; pointer-events:all; }
       <span class="bar"></span>
     </span>
   </div>
-  <a class="btn-cargar" href="https://docs.google.com/forms/d/e/1FAIpQLSdeQC03QDjA4bjF2XJT5Fn1W1JaHC_Bw9sBMdxfTcitjYq-WA/viewform" target="_blank">Cargar material</a>
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeQC03QDjA4bjF2XJT5Fn1W1JaHC_Bw9sBMdxfTcitjYq-WA/viewform" target="_blank" style="display:flex;align-items:center;opacity:0.8;padding:8px"><img src="upload.png" style="height:26px"></a>
 </div>
 
 <!-- OVERLAY -->
@@ -486,7 +486,7 @@ body.buscando #header { opacity:1; pointer-events:all; }
 <div class="bienvenida-wrap" id="bienvenida-wrap">
   <p>Hola. Soy la <strong>Materialoteca</strong> de Tecnología.<br>Preguntame sobre cualquier material: qué es, para qué sirve, o cómo se compara con otros.</p>
   <div class="hint-tap">tocá la esfera para consultar</div>
-  <div style="margin-top:60px;text-align:center;"><img src="fad-blanco.png" style="height:40px;opacity:0.6"></div>
+  <div style="margin-top:100px;text-align:center;"><img src="fad-blanco.png" style="height:40px;opacity:0.6"></div>
 </div>
 <div class="buscador-wrap-outer" id="buscador-wrap">
 
