@@ -65,7 +65,7 @@ body.buscando #orbe-img {
 .bienvenida-wrap .hint-tap { margin-top:32px; font-family:Roboto,sans-serif; font-weight:400; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.3); animation:pulso 2.5s ease-in-out infinite; }
 
 .buscador-wrap-outer {
-  position:fixed; top:120px; left:0; right:0; bottom:0;
+  position:fixed; top:56px; left:0; right:0; bottom:0;
   padding:0; overflow-y:auto; opacity:0; transform:translateY(20px);
   pointer-events:none; transition:opacity 0.7s ease 0.5s,transform 0.7s ease 0.5s; z-index:10;
 }
@@ -135,6 +135,145 @@ body.buscando #orbe-img {
 
 /* Resultados */
 #resultados { padding:16px 20px 40px; }
+
+
+/* ── HEADER ── */
+#header {
+  position:fixed; top:0; left:0; right:0; height:56px;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 20px; z-index:50;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.5s ease 0.6s;
+}
+body.buscando #header { opacity:1; pointer-events:all; }
+
+.header-logo {
+  font-family:Orbitron,sans-serif; font-size:13px; font-weight:700;
+  color:rgba(255,255,255,0.7); letter-spacing:1px;
+}
+.header-logo img { height:22px; vertical-align:middle; margin-right:8px; }
+
+.btn-cargar {
+  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+  border-radius:20px; padding:7px 16px; color:white;
+  font-family:Roboto,sans-serif; font-size:11px; font-weight:700;
+  cursor:pointer; letter-spacing:1px; text-decoration:none;
+  transition:background 0.2s;
+}
+.btn-cargar:hover { background:rgba(255,255,255,0.2); }
+
+/* ── HAMBURGUESA CSS ── */
+#nav-container {
+  position:relative; width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:8px;
+}
+.toggle-icon {
+  display:block; position:relative; width:100%;
+  margin:-2.2em auto 0 0.2em;
+  transition:margin 600ms; cursor:pointer;
+}
+.toggle-icon .bar {
+  display:block; width:3.8em; height:0.2em; margin:0.9em;
+  border-right:2.8em solid rgba(255,255,255,0.8);
+  border-left:0.6em solid rgba(255,255,255,0.4);
+  box-sizing:border-box;
+  transition-property:transform,margin,border-right-color,box-shadow;
+  transition-duration:600ms;
+}
+.toggle-icon .bar:nth-of-type(1) { transition:opacity 300ms; }
+.toggle-icon .bar:nth-of-type(2) { transform:rotate(-180deg); }
+
+.pushed .toggle-icon { margin:-3.2em 0 0 0.7em; }
+.pushed .bar:nth-of-type(1) { opacity:0; }
+.pushed .bar:nth-of-type(2) {
+  margin-left:1.4em;
+  transform:rotate(-137deg) translateY(-1.5em);
+}
+.pushed .bar:nth-of-type(3) {
+  margin-left:0.5em;
+  transform:rotate(-42deg);
+}
+
+/* ── PANEL LATERAL ── */
+#menu-panel {
+  position:fixed; top:0; right:-320px; width:300px; height:100vh;
+  background:#0e1a2e; border-left:1px solid rgba(255,255,255,0.08);
+  z-index:200; transition:right 0.4s cubic-bezier(0.4,0,0.2,1);
+  overflow-y:auto; padding:70px 28px 40px;
+}
+#menu-panel.abierto { right:0; }
+
+#menu-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.5);
+  z-index:199; opacity:0; pointer-events:none;
+  transition:opacity 0.4s ease;
+}
+#menu-overlay.visible { opacity:1; pointer-events:all; }
+
+.menu-close {
+  position:absolute; top:18px; right:20px;
+  background:none; border:none; color:rgba(255,255,255,0.5);
+  font-size:22px; cursor:pointer; padding:4px 8px;
+}
+
+.menu-logo { margin-bottom:32px; }
+.menu-logo img { height:28px; }
+
+.menu-seccion {
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  padding:20px 0;
+}
+.menu-seccion:last-child { border-bottom:none; }
+.menu-seccion h3 {
+  font-family:Orbitron,sans-serif; font-size:9px; font-weight:700;
+  letter-spacing:3px; text-transform:uppercase;
+  color:rgba(94,180,207,0.8); margin-bottom:12px;
+}
+.menu-seccion p, .menu-seccion a {
+  font-family:'Roboto Slab',serif; font-size:13px; font-weight:300;
+  color:rgba(255,255,255,0.65); line-height:1.7; text-decoration:none;
+  display:block;
+}
+.menu-seccion a:hover { color:white; }
+
+.menu-btn {
+  display:inline-block; margin-top:14px;
+  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+  border-radius:20px; padding:9px 20px; color:white;
+  font-family:Roboto,sans-serif; font-size:11px; font-weight:700;
+  cursor:pointer; letter-spacing:1px; text-decoration:none;
+  transition:background 0.2s;
+}
+.menu-btn:hover { background:rgba(255,255,255,0.2); }
+
+/* Sugerencias form */
+.menu-form { display:none; margin-top:14px; }
+.menu-form.visible { display:block; }
+.menu-input {
+  width:100%; background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.15); border-radius:8px;
+  padding:10px 14px; color:white; font-size:13px;
+  font-family:'Roboto Slab',serif; font-weight:300;
+  outline:none; margin-bottom:10px;
+}
+.menu-ok {
+  font-family:'Roboto Slab',serif; font-size:12px; font-weight:300;
+  color:rgba(94,180,207,0.9); display:none; margin-top:8px;
+}
+
+/* Instalar PWA */
+#btn-instalar-pwa {
+  display:none; margin-top:14px;
+}
+.ios-instrucciones {
+  margin-top:14px; display:none;
+  background:rgba(255,255,255,0.04); border-radius:8px; padding:14px;
+}
+.ios-instrucciones p {
+  font-family:Roboto,sans-serif; font-size:12px; font-weight:300;
+  color:rgba(255,255,255,0.6); line-height:1.6;
+}
 
 /* Solicitud de material */
 .solicitud-wrap {
@@ -278,6 +417,72 @@ body.buscando #orbe-img {
 </head>
 <body>
 <div id="fondo"></div>
+
+<!-- HEADER (visible en buscador) -->
+<div id="header">
+  <div class="header-logo">
+    <img src="fad-blanco.png" alt="FAD"> materialoteca
+  </div>
+  <div style="display:flex;gap:12px;align-items:center">
+    <a class="btn-cargar" href="https://docs.google.com/forms/d/e/1FAIpQLSdeQC03QDjA4bjF2XJT5Fn1W1JaHC_Bw9sBMdxfTcitjYq-WA/viewform" target="_blank">Cargar material</a>
+    <div id="nav-container" onclick="toggleMenu()">
+      <span class="toggle-icon">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY -->
+<div id="menu-overlay" onclick="cerrarMenu()"></div>
+
+<!-- PANEL LATERAL -->
+<div id="menu-panel">
+  <button class="menu-close" onclick="cerrarMenu()">✕</button>
+  <div class="menu-logo"><img src="fad-blanco.png" alt="FAD UNCuyo"></div>
+
+  <div class="menu-seccion">
+    <h3>Cargar material</h3>
+    <p>Cargá el material que analizaste en tu TPI.</p>
+    <a class="menu-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSdeQC03QDjA4bjF2XJT5Fn1W1JaHC_Bw9sBMdxfTcitjYq-WA/viewform" target="_blank">Ir al formulario →</a>
+  </div>
+
+  <div class="menu-seccion">
+    <h3>Sugerencias</h3>
+    <p>¿Querés sugerir un material o hacernos un comentario?</p>
+    <button class="menu-btn" onclick="mostrarFormSugerencia()">Enviar sugerencia</button>
+    <div class="menu-form" id="form-sugerencia">
+      <input class="menu-input" id="sug-nombre" placeholder="Tu nombre" type="text">
+      <input class="menu-input" id="sug-contacto" placeholder="Email o teléfono" type="text">
+      <input class="menu-input" id="sug-texto" placeholder="Tu sugerencia o material" type="text">
+      <button class="menu-btn" onclick="enviarSugerencia()">Enviar</button>
+      <div class="menu-ok" id="sug-ok">✓ ¡Gracias! La Materialoteca la va a revisar.</div>
+    </div>
+  </div>
+
+  <div class="menu-seccion">
+    <h3>Quiénes somos</h3>
+    <p>Esta Materialoteca está construida a partir del análisis de materiales realizado por estudiantes de la cátedra Tecnología 2 – Insumos, con el soporte del Centro de Investigación en Tecnologías Emergentes (CiFAD TE) de la Facultad de Artes y Diseño de la Universidad Nacional de Cuyo (FAD–UNCUYO).</p>
+  </div>
+
+  <div class="menu-seccion">
+    <h3>Contacto</h3>
+    <a href="mailto:citech@gm.fad.uncu.edu.ar">citech@gm.fad.uncu.edu.ar</a>
+  </div>
+
+  <div class="menu-seccion">
+    <h3>Instalar app</h3>
+    <p>Podés instalar la Materialoteca en tu celular para acceder más rápido, sin necesidad de abrir el navegador.</p>
+    <button class="menu-btn" id="btn-instalar-pwa" onclick="instalarPWA()">Instalar en este dispositivo</button>
+    <div class="ios-instrucciones" id="ios-instrucciones">
+      <p>En Safari: tocá el botón <strong>Compartir</strong> ↑ y luego <strong>"Añadir a pantalla de inicio"</strong>.</p>
+    </div>
+  </div>
+
+</div>
+
 <img id="orbe-img" src="orbe-animada.gif" alt="">
 <div class="texto-splash" id="texto-splash">
   <h1>materialoteca</h1>
@@ -533,6 +738,70 @@ async function enviarSolicitud() {
     btn.textContent = 'Enviar solicitud';
     btn.disabled = false;
   }
+}
+
+
+// ── MENÚ ──
+function toggleMenu() {
+  const panel = document.getElementById('menu-panel');
+  const overlay = document.getElementById('menu-overlay');
+  const nav = document.getElementById('nav-container');
+  const abierto = panel.classList.contains('abierto');
+  if (abierto) {
+    panel.classList.remove('abierto');
+    overlay.classList.remove('visible');
+    nav.classList.remove('pushed');
+  } else {
+    panel.classList.add('abierto');
+    overlay.classList.add('visible');
+    nav.classList.add('pushed');
+  }
+}
+function cerrarMenu() {
+  document.getElementById('menu-panel').classList.remove('abierto');
+  document.getElementById('menu-overlay').classList.remove('visible');
+  document.getElementById('nav-container').classList.remove('pushed');
+}
+
+function mostrarFormSugerencia() {
+  document.getElementById('form-sugerencia').classList.add('visible');
+}
+
+async function enviarSugerencia() {
+  const nombre = document.getElementById('sug-nombre').value.trim();
+  const contacto = document.getElementById('sug-contacto').value.trim();
+  const texto = document.getElementById('sug-texto').value.trim();
+  if (!texto) return;
+  try {
+    await fetch('https://script.google.com/macros/s/AKfycbzC7OdC5ExvFJr-_JjYmXjT-3xKEamQAgRfgB-yHw-Wsnwb8WDr_EmV-giCdiHGXtA/exec', {
+      method:'POST', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ accion:'sugerencia', nombre, contacto, texto })
+    });
+    document.getElementById('sug-ok').style.display = 'block';
+    document.getElementById('form-sugerencia').querySelectorAll('input,button').forEach(el => el.style.display = 'none');
+  } catch(err) {}
+}
+
+// ── PWA INSTALL ──
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('btn-instalar-pwa').style.display = 'inline-block';
+});
+
+function instalarPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+  }
+}
+
+// Mostrar instrucciones iOS si es Safari
+const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const esSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+if (esIOS && esSafari) {
+  document.getElementById('ios-instrucciones').style.display = 'block';
 }
 
 </script>
