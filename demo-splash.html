@@ -298,10 +298,10 @@ body.buscando #orbe-img {
 
   <div class="seccion-label">Sugerencias</div>
   <div class="sugerencias">
-    <div class="sugerencia" onclick="usarSugerencia(this)">¿Qué es el cartón corrugado?</div>
-    <div class="sugerencia" onclick="usarSugerencia(this)">Material rígido y reciclable</div>
-    <div class="sugerencia" onclick="usarSugerencia(this)">Comparar cartón y PET</div>
-    <div class="sugerencia" onclick="usarSugerencia(this)">Material liviano para etiquetas</div>
+    <button class="sugerencia" onclick="usarSugerencia(this)">¿Qué es el cartón corrugado?</button>
+    <button class="sugerencia" onclick="usarSugerencia(this)">Material rígido y reciclable</button>
+    <button class="sugerencia" onclick="usarSugerencia(this)">Comparar cartón y PET</button>
+    <button class="sugerencia" onclick="usarSugerencia(this)">Material liviano para etiquetas</button>
   </div>
 
   <div class="spinner-wrap" id="spinner">
@@ -367,7 +367,7 @@ function irBuscador() {
 let lastTap = 0;
 let tocado = false;
 document.addEventListener("touchend", function(e) {
-  if (e.target.tagName !== "BUTTON" && e.target.tagName !== "INPUT") e.preventDefault();
+  if (e.target.tagName !== "BUTTON" && e.target.tagName !== "INPUT" && e.target.tagName !== "A") e.preventDefault();
   const now = Date.now();
   const gap = now - lastTap;
   lastTap = now;
