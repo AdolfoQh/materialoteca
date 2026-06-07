@@ -166,7 +166,6 @@ body.buscando #orbe-img {
 #burbuja-canvas {
   position:fixed; inset:0; z-index:6;
   pointer-events:none;
-  filter:blur(20px);
   transition:opacity 0.8s ease;
 }
 body.bienvenida #burbuja-canvas,
@@ -994,18 +993,49 @@ document.getElementById("resultados").addEventListener("click", function(e) {
       if (b.y - b.r < 0)  { b.y = b.r;   b.vy =  Math.abs(b.vy) * 0.5; }
       if (b.y + b.r > H)  { b.y = H-b.r; b.vy = -Math.abs(b.vy) * 0.5; }
 
-      // gradiente radial: highlight interno → borde transparente
-      var g = ctx.createRadialGradient(
-        b.x - b.r*0.28, b.y - b.r*0.32, b.r * 0.05,
-        b.x, b.y, b.r
-      );
-      g.addColorStop(0, 'rgba('+b.c[0]+','+b.c[1]+','+b.c[2]+',0.55)');
-      g.addColorStop(0.5,'rgba('+b.c[0]+','+b.c[1]+','+b.c[2]+',0.22)');
-      g.addColorStop(1, 'rgba('+b.c[0]+','+b.c[1]+','+b.c[2]+',0.02)');
+      var r = b.r, x = b.x, y = b.y;
+      var cr = 'rgba('+b.c[0]+','+b.c[1]+','+b.c[2]+',';
 
+      // 1. Relleno interior casi transparente (color muy sutil en el centro)
+      var gFill = ctx.createRadialGradient(x, y, r*0.1, x, y, r);
+      gFill.addColorStop(0,   cr+'0.04)');
+      gFill.addColorStop(0.7, cr+'0.10)');
+      gFill.addColorStop(1,   cr+'0.30)');
       ctx.beginPath();
-      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-      ctx.fillStyle = g;
+      ctx.arc(x, y, r, 0, Math.PI*2);
+      ctx.fillStyle = gFill;
+      ctx.fill();
+
+      // 2. Borde de la burbuja
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI*2);
+      ctx.strokeStyle = cr+'0.45)';
+      ctx.lineWidth = 1.8;
+      ctx.stroke();
+
+      // 3. Highlight principal (brillo arriba-izquierda)
+      var gHL = ctx.createRadialGradient(
+        x - r*0.35, y - r*0.38, r*0.02,
+        x - r*0.25, y - r*0.28, r*0.42
+      );
+      gHL.addColorStop(0,   'rgba(255,255,255,0.55)');
+      gHL.addColorStop(0.5, 'rgba(255,255,255,0.12)');
+      gHL.addColorStop(1,   'rgba(255,255,255,0.00)');
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI*2);
+      ctx.fillStyle = gHL;
+      ctx.fill();
+
+      // 4. Reflejo pequeño abajo-derecha
+      var gRef = ctx.createRadialGradient(
+        x + r*0.38, y + r*0.42, 0,
+        x + r*0.38, y + r*0.42, r*0.18
+      );
+      gRef.addColorStop(0,   'rgba(255,255,255,0.20)');
+      gRef.addColorStop(1,   'rgba(255,255,255,0.00)');
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI*2);
+      ctx.fillStyle = gRef;
       ctx.fill();
     });
   }
