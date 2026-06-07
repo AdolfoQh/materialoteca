@@ -632,8 +632,19 @@ function irBuscador() {
 // UN SOLO listener touch
 let lastTap = 0;
 let tocado = false;
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener("touchstart", function(e) {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
 document.addEventListener("touchend", function(e) {
   const navContainer = document.getElementById("nav-container");
+  // Cerrar lightbox: siempre preventDefault para evitar el click fantasma 300ms después
+  if (document.getElementById("lightbox").classList.contains("visible")) {
+    e.preventDefault();
+    cerrarLightbox();
+    return;
+  }
   const skipPrevent = e.target.tagName === "BUTTON" || e.target.tagName === "INPUT" || e.target.tagName === "A" || e.target.closest("a") || e.target === navContainer || (navContainer && navContainer.contains(e.target));
   if (!skipPrevent) e.preventDefault();
   const now = Date.now();
@@ -641,18 +652,20 @@ document.addEventListener("touchend", function(e) {
   lastTap = now;
   tocado = true;
   setTimeout(function(){ tocado = false; }, 500);
-  // Cerrar lightbox primero si está abierto
-  if (document.getElementById("lightbox").classList.contains("visible")) { cerrarLightbox(); return; }
   if (estado === "splash") {
     if (gap < 300) irBienvenida();
     return;
   }
   if (estado === "bienvenida") {
-    const orbeImg = document.getElementById("orbe-img");
     if (e.target === document.getElementById('orbe-img')) irBuscador();
   }
   if (estado === "buscador") {
-    if (e.target.classList.contains("lightbox-trigger")) abrirLightbox(e.target.src);
+    // Solo abrir lightbox si fue un tap (no un swipe de galería)
+    const dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+    if (e.target.classList.contains("lightbox-trigger") && dx < 10 && dy < 10) {
+      abrirLightbox(e.target.src);
+    }
   }
 }, { passive: false });
 
