@@ -560,10 +560,11 @@ body.buscando #header { opacity:1; pointer-events:all; }
 
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <filter id="gooey">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blur"/>
+    <filter id="gooey" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="18" result="blur"/>
       <feColorMatrix in="blur" mode="matrix"
-        values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 26 -11" result="goo"/>
+        values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" result="goo"/>
+      <feBlend in="SourceGraphic" in2="goo" mode="normal"/>
     </filter>
   </defs>
 </svg>
@@ -960,21 +961,22 @@ document.getElementById("resultados").addEventListener("click", function(e) {
     gy = ((e.clientY / H) - 0.5) * 1.2 + 0.15;
   });
 
-  // Colores y tamaños — azules/violetas como la paleta del proyecto
+  // Gradientes — centro más luminoso, borde más oscuro y transparente
   var configs = [
-    { r:75,  color:'rgba(55,90,230,0.82)'  },
-    { r:55,  color:'rgba(90,45,215,0.80)'  },
-    { r:90,  color:'rgba(25,130,230,0.78)' },
-    { r:48,  color:'rgba(100,55,220,0.82)' },
-    { r:65,  color:'rgba(40,75,200,0.80)'  },
-    { r:42,  color:'rgba(60,120,250,0.78)' },
+    { r:80,  ci:'rgba(100,140,255,0.95)', co:'rgba(30,55,200,0.55)'  },
+    { r:58,  ci:'rgba(160,90,255,0.95)',  co:'rgba(80,25,200,0.50)'  },
+    { r:95,  ci:'rgba(60,185,255,0.95)',  co:'rgba(15,90,210,0.50)'  },
+    { r:50,  ci:'rgba(180,100,255,0.92)', co:'rgba(100,35,215,0.50)' },
+    { r:68,  ci:'rgba(80,115,240,0.95)',  co:'rgba(30,55,190,0.50)'  },
+    { r:44,  ci:'rgba(120,175,255,0.92)', co:'rgba(50,95,225,0.50)'  },
   ];
 
   var blobs = configs.map(function(cfg) {
     var d = cfg.r * 2;
     var el = document.createElement('div');
     el.className = 'lava-blob';
-    el.style.cssText = 'width:'+d+'px;height:'+d+'px;background:'+cfg.color+';';
+    var grad = 'radial-gradient(circle at 38% 32%, '+cfg.ci+' 0%, '+cfg.co+' 100%)';
+    el.style.cssText = 'width:'+d+'px;height:'+d+'px;background:'+grad+';';
     wrap.appendChild(el);
     return {
       el: el,
