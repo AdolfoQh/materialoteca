@@ -162,6 +162,16 @@ body.buscando #orbe-img {
   margin:8px 0 20px;
 }
 
+/* Canvas burbujas */
+#burbuja-canvas {
+  position:fixed; inset:0; z-index:6;
+  pointer-events:none;
+  filter:blur(20px);
+  transition:opacity 0.8s ease;
+}
+body.bienvenida #burbuja-canvas,
+body.buscando   #burbuja-canvas { opacity:0; }
+
 /* Lightbox */
 #lightbox {
   display:none; position:fixed; inset:0;
@@ -543,6 +553,7 @@ body.buscando #header { opacity:1; pointer-events:all; }
 
 </div>
 
+<canvas id="burbuja-canvas"></canvas>
 <div id="lightbox" onclick="cerrarLightbox()"><img id="lightbox-img" src=""></div>
 <button id="lightbox-close" onclick="cerrarLightbox()">✕</button>
 <img id="orbe-img" src="orbe-animada.gif" alt="">
@@ -596,6 +607,7 @@ function activarGiro() {
   window.addEventListener("deviceorientation", function(e) {
     if (e.gamma===null) return;
     mover(Math.max(0,Math.min(100,50+e.gamma*1.5)), Math.max(0,Math.min(100,50+(e.beta-45))));
+    if (typeof bubSetGrav === 'function') bubSetGrav(e.gamma, e.beta);
   });
 }
 function pedirPermiso() {
@@ -909,6 +921,98 @@ function cerrarLightbox() {
 document.getElementById("resultados").addEventListener("click", function(e) {
   if (e.target.classList.contains("lightbox-trigger")) abrirLightbox(e.target.src);
 });
+
+// ── BURBUJAS SPLASH ──
+(function() {
+  var cvs = document.getElementById('burbuja-canvas');
+  if (!cvs) return;
+  var ctx = cvs.getContext('2d');
+  var W = 0, H = 0;
+  // gravedad: x e y en rango aprox -1.2 a 1.2
+  var gx = 0, gy = 0.25;
+
+  function resize() {
+    W = cvs.width = window.innerWidth;
+    H = cvs.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Exponer para que activarGiro() lo alimente
+  window.bubSetGrav = function(gamma, beta) {
+    gx = Math.max(-1.5, Math.min(1.5, gamma / 45));
+    gy = Math.max(-1.5, Math.min(1.5, (beta - 45) / 45));
+  };
+
+  // Desktop: mouse mueve la gravedad suavemente
+  document.addEventListener('mousemove', function(e) {
+    if (estado !== 'splash') return;
+    gx = ((e.clientX / W) - 0.5) * 1.2;
+    gy = ((e.clientY / H) - 0.5) * 1.2 + 0.15;
+  });
+
+  // Colores: azules, violetas, cyan — paleta del proyecto
+  var palette = [
+    [45, 95, 225], [75, 40, 205], [18, 135, 225],
+    [95, 55, 210], [28, 68, 185], [52, 118, 245], [38, 52, 198]
+  ];
+  var sizes  = [88, 62, 52, 72, 46, 94, 58];
+
+  var bubs = palette.map(function(c, i) {
+    return {
+      x:  W * (0.1 + 0.8 * Math.random()),
+      y:  H * (0.1 + 0.8 * Math.random()),
+      r:  sizes[i],
+      vx: (Math.random() - 0.5) * 0.7,
+      vy: (Math.random() - 0.5) * 0.7,
+      c:  c
+    };
+  });
+
+  function tick() {
+    if (estado !== 'splash') return; // para automáticamente al salir del splash
+    requestAnimationFrame(tick);
+    ctx.clearRect(0, 0, W, H);
+
+    bubs.forEach(function(b) {
+      // aceleración por gravedad
+      b.vx += gx * 0.032;
+      b.vy += gy * 0.032;
+      // amortiguación (lentitud tipo lava)
+      b.vx *= 0.976;
+      b.vy *= 0.976;
+      // velocidad máxima
+      var spd = Math.sqrt(b.vx*b.vx + b.vy*b.vy);
+      if (spd > 2.4) { b.vx = b.vx/spd*2.4; b.vy = b.vy/spd*2.4; }
+
+      b.x += b.vx;
+      b.y += b.vy;
+
+      // rebote en bordes con pérdida de energía
+      if (b.x - b.r < 0)  { b.x = b.r;   b.vx =  Math.abs(b.vx) * 0.5; }
+      if (b.x + b.r > W)  { b.x = W-b.r; b.vx = -Math.abs(b.vx) * 0.5; }
+      if (b.y - b.r < 0)  { b.y = b.r;   b.vy =  Math.abs(b.vy) * 0.5; }
+      if (b.y + b.r > H)  { b.y = H-b.r; b.vy = -Math.abs(b.vy) * 0.5; }
+
+      // gradiente radial: highlight interno → borde transparente
+      var g = ctx.createRadialGradient(
+        b.x - b.r*0.28, b.y - b.r*0.32, b.r * 0.05,
+        b.x, b.y, b.r
+      );
+      g.addColorStop(0, 'rgba('+b.c[0]+','+b.c[1]+','+b.c[2]+',0.55)');
+      g.addColorStop(0.5,'rgba('+b.c[0]+','+b.c[1]+','+b.c[2]+',0.22)');
+      g.addColorStop(1, 'rgba('+b.c[0]+','+b.c[1]+','+b.c[2]+',0.02)');
+
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.fillStyle = g;
+      ctx.fill();
+    });
+  }
+
+  // Arrancar solo si estamos en splash
+  if (estado === 'splash') tick();
+})();
 
 // Mostrar instrucciones iOS si es Safari
 const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
