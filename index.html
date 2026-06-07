@@ -375,8 +375,21 @@ body.buscando #header { opacity:1; pointer-events:all; }
   width:100%; height:200px;
   object-fit:cover; display:block;
   background:rgba(255,255,255,0.03);
+  flex-shrink:0; scroll-snap-align:start;
 }
 .tarjeta-imagen.lightbox-trigger { cursor:zoom-in; }
+.tarjeta-galeria {
+  display:flex; overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+}
+.tarjeta-galeria::-webkit-scrollbar { display:none; }
+.galeria-info {
+  padding:6px 16px 2px;
+  font-family:Roboto,sans-serif; font-size:10px;
+  color:rgba(255,255,255,0.25); letter-spacing:1px;
+  text-align:right;
+}
 .tarjeta-imagen-placeholder {
   width:100%; height:140px;
   background:rgba(255,255,255,0.03);
@@ -707,8 +720,16 @@ function renderizar(data) {
     data.materiales.forEach(function(m, i) {
       html += '<div class="tarjeta" style="animation-delay:' + (i*0.1) + 's">';
 
-      if (m.imagen_url && !m.imagen_url.includes("example.com")) {
-        html += '<img class="tarjeta-imagen lightbox-trigger" src="' + m.imagen_url + '" onerror="this.style.display=\'none\'">';
+      var imgs = m.imagenes && m.imagenes.length > 0 ? m.imagenes.filter(function(u){ return u && !u.includes('example.com'); }) : [];
+      if (imgs.length > 1) {
+        html += '<div class="tarjeta-galeria">';
+        imgs.forEach(function(url) {
+          html += '<img class="tarjeta-imagen lightbox-trigger" src="' + url + '" onerror="this.parentElement.removeChild(this)">';
+        });
+        html += '</div>';
+        html += '<div class="galeria-info">' + imgs.length + ' fotos · deslizá →</div>';
+      } else if (imgs.length === 1) {
+        html += '<img class="tarjeta-imagen lightbox-trigger" src="' + imgs[0] + '" onerror="this.style.display=\'none\'">';
       } else {
         html += '<div class="tarjeta-imagen-placeholder">sin imagen</div>';
       }
