@@ -162,14 +162,20 @@ body.buscando #orbe-img {
   margin:8px 0 20px;
 }
 
-/* Canvas burbujas */
-#burbuja-canvas {
+/* Lava lamp */
+#lava-wrap {
   position:fixed; inset:0; z-index:6;
   pointer-events:none;
+  filter:url(#gooey);
   transition:opacity 0.8s ease;
 }
-body.bienvenida #burbuja-canvas,
-body.buscando   #burbuja-canvas { opacity:0; }
+body.bienvenida #lava-wrap,
+body.buscando   #lava-wrap { opacity:0; }
+.lava-blob {
+  position:absolute;
+  border-radius:50%;
+  will-change:transform;
+}
 
 /* Lightbox */
 #lightbox {
@@ -552,7 +558,16 @@ body.buscando #header { opacity:1; pointer-events:all; }
 
 </div>
 
-<canvas id="burbuja-canvas"></canvas>
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="gooey">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blur"/>
+      <feColorMatrix in="blur" mode="matrix"
+        values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 26 -11" result="goo"/>
+    </filter>
+  </defs>
+</svg>
+<div id="lava-wrap"></div>
 <div id="lightbox" onclick="cerrarLightbox()"><img id="lightbox-img" src=""></div>
 <button id="lightbox-close" onclick="cerrarLightbox()">✕</button>
 <img id="orbe-img" src="orbe-animada.gif" alt="">
@@ -921,126 +936,75 @@ document.getElementById("resultados").addEventListener("click", function(e) {
   if (e.target.classList.contains("lightbox-trigger")) abrirLightbox(e.target.src);
 });
 
-// ── BURBUJAS SPLASH ──
+// ── LAVA LAMP SPLASH ──
 (function() {
-  var cvs = document.getElementById('burbuja-canvas');
-  if (!cvs) return;
-  var ctx = cvs.getContext('2d');
-  var W = 0, H = 0;
-  // gravedad: x e y en rango aprox -1.2 a 1.2
-  var gx = 0, gy = 0.25;
+  var wrap = document.getElementById('lava-wrap');
+  if (!wrap) return;
+  var W = window.innerWidth, H = window.innerHeight;
+  var gx = 0, gy = 0.3;
 
-  function resize() {
-    W = cvs.width = window.innerWidth;
-    H = cvs.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resize);
-  resize();
+  window.addEventListener('resize', function() {
+    W = window.innerWidth; H = window.innerHeight;
+  });
 
-  // Exponer para que activarGiro() lo alimente
+  // Gravedad desde gyroscopio (alimentado por activarGiro)
   window.bubSetGrav = function(gamma, beta) {
-    gx = Math.max(-1.5, Math.min(1.5, gamma / 45));
+    gx = Math.max(-1.5, Math.min(1.5,  gamma / 45));
     gy = Math.max(-1.5, Math.min(1.5, (beta - 45) / 45));
   };
 
-  // Desktop: mouse mueve la gravedad suavemente
+  // Desktop: mouse
   document.addEventListener('mousemove', function(e) {
     if (estado !== 'splash') return;
     gx = ((e.clientX / W) - 0.5) * 1.2;
     gy = ((e.clientY / H) - 0.5) * 1.2 + 0.15;
   });
 
-  // Colores: azules, violetas, cyan — paleta del proyecto
-  var palette = [
-    [45, 95, 225], [75, 40, 205], [18, 135, 225],
-    [95, 55, 210], [28, 68, 185], [52, 118, 245], [38, 52, 198]
+  // Colores y tamaños — azules/violetas como la paleta del proyecto
+  var configs = [
+    { r:75,  color:'rgba(55,90,230,0.82)'  },
+    { r:55,  color:'rgba(90,45,215,0.80)'  },
+    { r:90,  color:'rgba(25,130,230,0.78)' },
+    { r:48,  color:'rgba(100,55,220,0.82)' },
+    { r:65,  color:'rgba(40,75,200,0.80)'  },
+    { r:42,  color:'rgba(60,120,250,0.78)' },
   ];
-  var sizes  = [88, 62, 52, 72, 46, 94, 58];
 
-  var bubs = palette.map(function(c, i) {
+  var blobs = configs.map(function(cfg) {
+    var d = cfg.r * 2;
+    var el = document.createElement('div');
+    el.className = 'lava-blob';
+    el.style.cssText = 'width:'+d+'px;height:'+d+'px;background:'+cfg.color+';';
+    wrap.appendChild(el);
     return {
-      x:  W * (0.1 + 0.8 * Math.random()),
-      y:  H * (0.1 + 0.8 * Math.random()),
-      r:  sizes[i],
-      vx: (Math.random() - 0.5) * 0.7,
-      vy: (Math.random() - 0.5) * 0.7,
-      c:  c
+      el: el,
+      r:  cfg.r,
+      x:  cfg.r + Math.random() * (W - d),
+      y:  cfg.r + Math.random() * (H - d),
+      vx: (Math.random() - 0.5) * 0.6,
+      vy: (Math.random() - 0.5) * 0.6
     };
   });
 
   function tick() {
-    if (estado !== 'splash') return; // para automáticamente al salir del splash
+    if (estado !== 'splash') return;
     requestAnimationFrame(tick);
-    ctx.clearRect(0, 0, W, H);
-
-    bubs.forEach(function(b) {
-      // aceleración por gravedad
-      b.vx += gx * 0.032;
-      b.vy += gy * 0.032;
-      // amortiguación (lentitud tipo lava)
-      b.vx *= 0.976;
-      b.vy *= 0.976;
-      // velocidad máxima
+    blobs.forEach(function(b) {
+      b.vx += gx * 0.03;
+      b.vy += gy * 0.03;
+      b.vx *= 0.974;   // amortiguación lenta = movimiento suave tipo lava
+      b.vy *= 0.974;
       var spd = Math.sqrt(b.vx*b.vx + b.vy*b.vy);
-      if (spd > 2.4) { b.vx = b.vx/spd*2.4; b.vy = b.vy/spd*2.4; }
-
-      b.x += b.vx;
-      b.y += b.vy;
-
-      // rebote en bordes con pérdida de energía
-      if (b.x - b.r < 0)  { b.x = b.r;   b.vx =  Math.abs(b.vx) * 0.5; }
-      if (b.x + b.r > W)  { b.x = W-b.r; b.vx = -Math.abs(b.vx) * 0.5; }
-      if (b.y - b.r < 0)  { b.y = b.r;   b.vy =  Math.abs(b.vy) * 0.5; }
-      if (b.y + b.r > H)  { b.y = H-b.r; b.vy = -Math.abs(b.vy) * 0.5; }
-
-      var r = b.r, x = b.x, y = b.y;
-      var cr = 'rgba('+b.c[0]+','+b.c[1]+','+b.c[2]+',';
-
-      // 1. Relleno interior casi transparente (color muy sutil en el centro)
-      var gFill = ctx.createRadialGradient(x, y, r*0.1, x, y, r);
-      gFill.addColorStop(0,   cr+'0.04)');
-      gFill.addColorStop(0.7, cr+'0.10)');
-      gFill.addColorStop(1,   cr+'0.30)');
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI*2);
-      ctx.fillStyle = gFill;
-      ctx.fill();
-
-      // 2. Borde de la burbuja
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI*2);
-      ctx.strokeStyle = cr+'0.45)';
-      ctx.lineWidth = 1.8;
-      ctx.stroke();
-
-      // 3. Highlight principal (brillo arriba-izquierda)
-      var gHL = ctx.createRadialGradient(
-        x - r*0.35, y - r*0.38, r*0.02,
-        x - r*0.25, y - r*0.28, r*0.42
-      );
-      gHL.addColorStop(0,   'rgba(255,255,255,0.55)');
-      gHL.addColorStop(0.5, 'rgba(255,255,255,0.12)');
-      gHL.addColorStop(1,   'rgba(255,255,255,0.00)');
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI*2);
-      ctx.fillStyle = gHL;
-      ctx.fill();
-
-      // 4. Reflejo pequeño abajo-derecha
-      var gRef = ctx.createRadialGradient(
-        x + r*0.38, y + r*0.42, 0,
-        x + r*0.38, y + r*0.42, r*0.18
-      );
-      gRef.addColorStop(0,   'rgba(255,255,255,0.20)');
-      gRef.addColorStop(1,   'rgba(255,255,255,0.00)');
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI*2);
-      ctx.fillStyle = gRef;
-      ctx.fill();
+      if (spd > 2.2) { b.vx = b.vx/spd*2.2; b.vy = b.vy/spd*2.2; }
+      b.x += b.vx; b.y += b.vy;
+      if (b.x - b.r < 0)  { b.x = b.r;   b.vx =  Math.abs(b.vx)*0.5; }
+      if (b.x + b.r > W)  { b.x = W-b.r; b.vx = -Math.abs(b.vx)*0.5; }
+      if (b.y - b.r < 0)  { b.y = b.r;   b.vy =  Math.abs(b.vy)*0.5; }
+      if (b.y + b.r > H)  { b.y = H-b.r; b.vy = -Math.abs(b.vy)*0.5; }
+      b.el.style.transform = 'translate('+(b.x-b.r)+'px,'+(b.y-b.r)+'px)';
     });
   }
 
-  // Arrancar solo si estamos en splash
   if (estado === 'splash') tick();
 })();
 
