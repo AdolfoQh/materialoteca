@@ -166,6 +166,31 @@ body.buscando #orbe-img {
 }
 #lightbox.visible { display:flex; }
 #lightbox img { max-width:92vw; max-height:88vh; object-fit:contain; border-radius:8px; }
+#lightbox-close {
+  display:none; position:fixed; top:18px; right:18px;
+  background:rgba(255,255,255,0.15); border:none; color:#fff;
+  font-size:22px; width:44px; height:44px; border-radius:50%;
+  cursor:pointer; z-index:1000; align-items:center; justify-content:center;
+}
+#lightbox-close.visible { display:flex; }
+
+/* Galería múltiples fotos */
+.tarjeta-galeria {
+  display:flex; overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+}
+.tarjeta-galeria::-webkit-scrollbar { display:none; }
+.tarjeta-galeria .tarjeta-imagen {
+  flex:0 0 100%; scroll-snap-align:start;
+  max-width:100%;
+}
+.galeria-info {
+  padding:6px 16px 2px;
+  font-family:Roboto,sans-serif; font-size:10px;
+  color:rgba(255,255,255,0.25); letter-spacing:1px;
+  text-align:right;
+}
 
 /* Desktop max-width */
 @media (min-width:760px) {
@@ -516,7 +541,8 @@ body.buscando #header { opacity:1; pointer-events:all; }
 
 </div>
 
-<div id="lightbox" onclick="this.classList.remove('visible')"><img id="lightbox-img" src=""></div>
+<div id="lightbox" onclick="cerrarLightbox()"><img id="lightbox-img" src=""></div>
+<button id="lightbox-close" onclick="cerrarLightbox()">✕</button>
 <img id="orbe-img" src="orbe-animada.gif" alt="">
 <div class="texto-splash" id="texto-splash">
   <h1>materialoteca</h1>
@@ -615,6 +641,8 @@ document.addEventListener("touchend", function(e) {
   lastTap = now;
   tocado = true;
   setTimeout(function(){ tocado = false; }, 500);
+  // Cerrar lightbox primero si está abierto
+  if (document.getElementById("lightbox").classList.contains("visible")) { cerrarLightbox(); return; }
   if (estado === "splash") {
     if (gap < 300) irBienvenida();
     return;
@@ -622,6 +650,9 @@ document.addEventListener("touchend", function(e) {
   if (estado === "bienvenida") {
     const orbeImg = document.getElementById("orbe-img");
     if (e.target === document.getElementById('orbe-img')) irBuscador();
+  }
+  if (estado === "buscador") {
+    if (e.target.classList.contains("lightbox-trigger")) abrirLightbox(e.target.src);
   }
 }, { passive: false });
 
@@ -687,8 +718,18 @@ function renderizar(data) {
     data.materiales.forEach(function(m, i) {
       html += '<div class="tarjeta" style="animation-delay:' + (i*0.1) + 's">';
 
-      if (m.imagen_url && !m.imagen_url.includes("example.com")) {
-        html += '<img class="tarjeta-imagen lightbox-trigger" src="' + m.imagen_url + '" onerror="this.style.display=\'none\'">';
+      var imgs = m.imagenes && m.imagenes.length > 0
+        ? m.imagenes.filter(function(u){ return u && !u.includes('example.com'); })
+        : [];
+      if (imgs.length > 1) {
+        html += '<div class="tarjeta-galeria">';
+        imgs.forEach(function(url) {
+          html += '<img class="tarjeta-imagen lightbox-trigger" src="' + url + '" onerror="this.parentElement.removeChild(this)">';
+        });
+        html += '</div>';
+        html += '<div class="galeria-info">' + imgs.length + ' fotos · deslizá →</div>';
+      } else if (imgs.length === 1) {
+        html += '<img class="tarjeta-imagen lightbox-trigger" src="' + imgs[0] + '" onerror="this.style.display=\'none\'">';
       } else {
         html += '<div class="tarjeta-imagen-placeholder">sin imagen</div>';
       }
@@ -844,6 +885,11 @@ function instalarPWA() {
 function abrirLightbox(src) {
   document.getElementById("lightbox-img").src = src;
   document.getElementById("lightbox").classList.add("visible");
+  document.getElementById("lightbox-close").classList.add("visible");
+}
+function cerrarLightbox() {
+  document.getElementById("lightbox").classList.remove("visible");
+  document.getElementById("lightbox-close").classList.remove("visible");
 }
 document.getElementById("resultados").addEventListener("click", function(e) {
   if (e.target.classList.contains("lightbox-trigger")) abrirLightbox(e.target.src);
