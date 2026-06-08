@@ -355,6 +355,23 @@ body.buscando #header { opacity:1; pointer-events:all; }
 }
 
 /* Instalar PWA */
+/* Cobertura */
+.cobertura-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.cobertura-fraccion { font-family:Orbitron,sans-serif; font-size:18px; font-weight:700; color:white; }
+.cobertura-fraccion span { font-size:11px; font-weight:400; color:rgba(255,255,255,0.4); margin-left:6px; font-family:Roboto,sans-serif; letter-spacing:1px; }
+.cobertura-barra-wrap { height:4px; background:rgba(255,255,255,0.1); border-radius:2px; margin-bottom:14px; }
+.cobertura-barra { height:4px; background:rgba(80,140,255,0.8); border-radius:2px; transition:width 0.8s ease; width:0; }
+.cobertura-lista { max-height:260px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.cobertura-lista::-webkit-scrollbar { width:3px; }
+.cobertura-lista::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:2px; }
+.cob-item { display:flex; align-items:center; gap:8px; padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+.cob-item:last-child { border-bottom:none; }
+.cob-icon { font-size:11px; width:14px; text-align:center; flex-shrink:0; }
+.cob-nombre { font-family:Roboto,sans-serif; font-size:12px; color:rgba(255,255,255,0.6); flex:1; }
+.cob-item.cubierto .cob-nombre { color:rgba(255,255,255,0.9); }
+.cob-count { font-family:Roboto,sans-serif; font-size:10px; color:rgba(80,140,255,0.8); flex-shrink:0; }
+.cobertura-loading { font-family:Roboto,sans-serif; font-size:12px; color:rgba(255,255,255,0.3); padding:8px 0; }
+
 #btn-instalar-pwa {
   display:none; margin-top:14px;
 }
@@ -557,6 +574,13 @@ body.buscando #header { opacity:1; pointer-events:all; }
       <input class="menu-input" id="sug-texto" placeholder="Tu sugerencia o material" type="text">
       <button class="menu-btn" onclick="enviarSugerencia()">Enviar</button>
       <div class="menu-ok" id="sug-ok">✓ ¡Gracias! La Materialoteca la va a revisar.</div>
+    </div>
+  </div>
+
+  <div class="menu-seccion" id="seccion-cobertura">
+    <h3>Cobertura</h3>
+    <div id="cobertura-wrap">
+      <div class="cobertura-loading">Cargando...</div>
     </div>
   </div>
 
@@ -913,6 +937,7 @@ function toggleMenu() {
   } else {
     panel.classList.add('abierto');
     overlay.classList.add('visible');
+    cargarCobertura();
     nav.classList.add('pushed');
   }
 }
@@ -1054,6 +1079,48 @@ document.getElementById("resultados").addEventListener("click", function(e) {
 
   if (estado === 'splash') tick();
 })();
+
+// ── COBERTURA ──
+var coberturaCache = null;
+async function cargarCobertura() {
+  const wrap = document.getElementById('cobertura-wrap');
+  if (!wrap) return;
+  // Usar cache si ya cargó
+  if (coberturaCache) { renderCobertura(coberturaCache); return; }
+  wrap.innerHTML = '<div class="cobertura-loading">Cargando...</div>';
+  try {
+    const res = await fetch('https://materialoteca.vercel.app/api/cobertura');
+    coberturaCache = await res.json();
+    renderCobertura(coberturaCache);
+  } catch(e) {
+    wrap.innerHTML = '<div class="cobertura-loading">No se pudo cargar.</div>';
+  }
+}
+
+function renderCobertura(data) {
+  const wrap = document.getElementById('cobertura-wrap');
+  const pct = data.total > 0 ? Math.round(data.cubiertos / data.total * 100) : 0;
+  let html = '<div class="cobertura-header">';
+  html += '<div class="cobertura-fraccion">' + data.cubiertos + ' / ' + data.total + '<span>materiales</span></div>';
+  html += '<div style="font-family:Roboto,sans-serif;font-size:11px;color:rgba(255,255,255,0.35)">' + pct + '%</div>';
+  html += '</div>';
+  html += '<div class="cobertura-barra-wrap"><div class="cobertura-barra" id="cob-barra"></div></div>';
+  html += '<div class="cobertura-lista">';
+  data.materiales.forEach(function(m) {
+    html += '<div class="cob-item' + (m.cubierto ? ' cubierto' : '') + '">';
+    html += '<span class="cob-icon">' + (m.cubierto ? '✓' : '○') + '</span>';
+    html += '<span class="cob-nombre">' + m.nombre + '</span>';
+    if (m.entradas > 0) html += '<span class="cob-count">' + m.entradas + (m.entradas === 1 ? ' entrada' : ' entradas') + '</span>';
+    html += '</div>';
+  });
+  html += '</div>';
+  wrap.innerHTML = html;
+  // Animar barra
+  setTimeout(function() {
+    var barra = document.getElementById('cob-barra');
+    if (barra) barra.style.width = pct + '%';
+  }, 50);
+}
 
 // Mostrar instrucciones iOS si es Safari
 const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
