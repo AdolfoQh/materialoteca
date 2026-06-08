@@ -568,11 +568,10 @@ body.buscando #header { opacity:1; pointer-events:all; }
 
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <filter id="gooey" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="18" result="blur"/>
+    <filter id="gooey" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="22" result="blur"/>
       <feColorMatrix in="blur" mode="matrix"
-        values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" result="goo"/>
-      <feBlend in="SourceGraphic" in2="goo" mode="normal"/>
+        values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -8"/>
     </filter>
   </defs>
 </svg>
@@ -967,13 +966,14 @@ document.getElementById("resultados").addEventListener("click", function(e) {
     gy = ((e.clientY / H) - 0.5) * 0.8;
   });
 
-  // Colores del proyecto. Cada blob: gradiente del centro al borde
+  // Blobs grandes — ocupan buena parte de la pantalla para que se toquen y fusionen
   var configs = [
-    { r:90,  ci:'rgba(90,130,255,0.92)',  co:'rgba(20,50,210,0.60)',  dur:11 },
-    { r:62,  ci:'rgba(150,80,255,0.90)',  co:'rgba(65,18,205,0.58)',  dur:14 },
-    { r:108, ci:'rgba(50,175,255,0.88)',  co:'rgba(8,80,220,0.55)',   dur:9  },
-    { r:52,  ci:'rgba(170,88,255,0.90)',  co:'rgba(88,28,215,0.58)',  dur:13 },
-    { r:76,  ci:'rgba(68,108,245,0.92)',  co:'rgba(22,48,195,0.60)',  dur:16 },
+    { r:130, ci:'rgba(80,120,255,0.95)',  co:'rgba(20,45,210,0.70)',  dur:13 },
+    { r:110, ci:'rgba(140,70,255,0.93)',  co:'rgba(60,15,205,0.68)',  dur:17 },
+    { r:120, ci:'rgba(45,165,255,0.93)',  co:'rgba(10,75,220,0.68)',  dur:10 },
+    { r:100, ci:'rgba(160,80,255,0.93)',  co:'rgba(80,22,215,0.68)',  dur:14 },
+    { r:115, ci:'rgba(60,100,245,0.95)',  co:'rgba(18,42,195,0.70)',  dur:11 },
+    { r:95,  ci:'rgba(100,150,255,0.93)', co:'rgba(35,70,225,0.68)',  dur:15 },
   ];
 
   var blobs = configs.map(function(cfg, i) {
@@ -983,19 +983,17 @@ document.getElementById("resultados").addEventListener("click", function(e) {
     var grad = 'radial-gradient(circle at 36% 30%, '+cfg.ci+', '+cfg.co+')';
     el.style.cssText = 'width:'+d+'px;height:'+d+'px;background:'+grad+';--dur:'+cfg.dur+'s';
     wrap.appendChild(el);
-    // Alternar: unos empiezan abajo (subirán), otros arriba (bajarán)
-    var startY = i % 2 === 0
-      ? H * 0.55 + Math.random() * H * 0.35
-      : H * 0.05 + Math.random() * H * 0.30;
+    // Distribuir por toda la pantalla pero con posiciones que garanticen solapamiento
+    var col = i % 2;
+    var row = Math.floor(i / 2);
     return {
       el: el, r: cfg.r,
-      x: cfg.r + Math.random() * (W - d),
-      y: startY,
-      vx: (Math.random() - 0.5) * 0.25,
-      vy: (Math.random() - 0.5) * 0.25,
-      // fase individual para el ciclo de flotación
-      phase:      i * (Math.PI * 2 / configs.length) + Math.random(),
-      phaseSpeed: 0.0012 + Math.random() * 0.0010
+      x: W * (0.25 + col * 0.5) + (Math.random() - 0.5) * W * 0.3,
+      y: H * (0.15 + row * 0.35) + (Math.random() - 0.5) * H * 0.1,
+      vx: (Math.random() - 0.5) * 0.2,
+      vy: (Math.random() - 0.5) * 0.2,
+      phase:      i * (Math.PI * 2 / configs.length),
+      phaseSpeed: 0.0010 + Math.random() * 0.0008
     };
   });
 
