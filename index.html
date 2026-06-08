@@ -636,6 +636,10 @@ body.buscando #header { opacity:1; pointer-events:all; }
 <script>
 const fondo = document.getElementById("fondo");
 const MAX = 80;
+// En desktop sin estado previo, saltar directo al buscador
+if (!sessionStorage.getItem("estado") && window.innerWidth >= 760) {
+  sessionStorage.setItem("estado", "buscador");
+}
 let estado = sessionStorage.getItem("estado") || "splash";
 
 function mover(px, py) {
