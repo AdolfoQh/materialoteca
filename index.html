@@ -173,8 +173,16 @@ body.bienvenida #lava-wrap,
 body.buscando   #lava-wrap { opacity:0; }
 .lava-blob {
   position:absolute;
-  border-radius:50%;
-  will-change:transform;
+  will-change:transform, border-radius;
+  animation: blob-morph var(--dur,9s) ease-in-out infinite alternate;
+}
+@keyframes blob-morph {
+  0%   { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
+  20%  { border-radius: 60% 40% 55% 45% / 42% 58% 44% 56%; }
+  40%  { border-radius: 44% 56% 42% 58% / 60% 40% 56% 44%; }
+  60%  { border-radius: 58% 42% 62% 38% / 46% 54% 42% 58%; }
+  80%  { border-radius: 46% 54% 48% 52% / 56% 44% 60% 40%; }
+  100% { border-radius: 54% 46% 44% 56% / 48% 52% 56% 44%; }
 }
 
 /* Lightbox */
@@ -942,49 +950,52 @@ document.getElementById("resultados").addEventListener("click", function(e) {
   var wrap = document.getElementById('lava-wrap');
   if (!wrap) return;
   var W = window.innerWidth, H = window.innerHeight;
-  var gx = 0, gy = 0.3;
+  var gx = 0, gy = 0;
 
-  window.addEventListener('resize', function() {
-    W = window.innerWidth; H = window.innerHeight;
-  });
+  window.addEventListener('resize', function() { W = window.innerWidth; H = window.innerHeight; });
 
-  // Gravedad desde gyroscopio (alimentado por activarGiro)
+  // Gyroscopio
   window.bubSetGrav = function(gamma, beta) {
-    gx = Math.max(-1.5, Math.min(1.5,  gamma / 45));
-    gy = Math.max(-1.5, Math.min(1.5, (beta - 45) / 45));
+    gx = Math.max(-1, Math.min(1,  gamma / 60));
+    gy = Math.max(-1, Math.min(1, (beta - 45) / 60));
   };
 
   // Desktop: mouse
   document.addEventListener('mousemove', function(e) {
     if (estado !== 'splash') return;
-    gx = ((e.clientX / W) - 0.5) * 1.2;
-    gy = ((e.clientY / H) - 0.5) * 1.2 + 0.15;
+    gx = ((e.clientX / W) - 0.5) * 0.8;
+    gy = ((e.clientY / H) - 0.5) * 0.8;
   });
 
-  // Gradientes — centro más luminoso, borde más oscuro y transparente
+  // Colores del proyecto. Cada blob: gradiente del centro al borde
   var configs = [
-    { r:80,  ci:'rgba(100,140,255,0.95)', co:'rgba(30,55,200,0.55)'  },
-    { r:58,  ci:'rgba(160,90,255,0.95)',  co:'rgba(80,25,200,0.50)'  },
-    { r:95,  ci:'rgba(60,185,255,0.95)',  co:'rgba(15,90,210,0.50)'  },
-    { r:50,  ci:'rgba(180,100,255,0.92)', co:'rgba(100,35,215,0.50)' },
-    { r:68,  ci:'rgba(80,115,240,0.95)',  co:'rgba(30,55,190,0.50)'  },
-    { r:44,  ci:'rgba(120,175,255,0.92)', co:'rgba(50,95,225,0.50)'  },
+    { r:90,  ci:'rgba(90,130,255,0.92)',  co:'rgba(20,50,210,0.60)',  dur:11 },
+    { r:62,  ci:'rgba(150,80,255,0.90)',  co:'rgba(65,18,205,0.58)',  dur:14 },
+    { r:108, ci:'rgba(50,175,255,0.88)',  co:'rgba(8,80,220,0.55)',   dur:9  },
+    { r:52,  ci:'rgba(170,88,255,0.90)',  co:'rgba(88,28,215,0.58)',  dur:13 },
+    { r:76,  ci:'rgba(68,108,245,0.92)',  co:'rgba(22,48,195,0.60)',  dur:16 },
   ];
 
-  var blobs = configs.map(function(cfg) {
+  var blobs = configs.map(function(cfg, i) {
     var d = cfg.r * 2;
     var el = document.createElement('div');
     el.className = 'lava-blob';
-    var grad = 'radial-gradient(circle at 38% 32%, '+cfg.ci+' 0%, '+cfg.co+' 100%)';
-    el.style.cssText = 'width:'+d+'px;height:'+d+'px;background:'+grad+';';
+    var grad = 'radial-gradient(circle at 36% 30%, '+cfg.ci+', '+cfg.co+')';
+    el.style.cssText = 'width:'+d+'px;height:'+d+'px;background:'+grad+';--dur:'+cfg.dur+'s';
     wrap.appendChild(el);
+    // Alternar: unos empiezan abajo (subirán), otros arriba (bajarán)
+    var startY = i % 2 === 0
+      ? H * 0.55 + Math.random() * H * 0.35
+      : H * 0.05 + Math.random() * H * 0.30;
     return {
-      el: el,
-      r:  cfg.r,
-      x:  cfg.r + Math.random() * (W - d),
-      y:  cfg.r + Math.random() * (H - d),
-      vx: (Math.random() - 0.5) * 0.6,
-      vy: (Math.random() - 0.5) * 0.6
+      el: el, r: cfg.r,
+      x: cfg.r + Math.random() * (W - d),
+      y: startY,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.25,
+      // fase individual para el ciclo de flotación
+      phase:      i * (Math.PI * 2 / configs.length) + Math.random(),
+      phaseSpeed: 0.0012 + Math.random() * 0.0010
     };
   });
 
@@ -992,17 +1003,28 @@ document.getElementById("resultados").addEventListener("click", function(e) {
     if (estado !== 'splash') return;
     requestAnimationFrame(tick);
     blobs.forEach(function(b) {
-      b.vx += gx * 0.03;
-      b.vy += gy * 0.03;
-      b.vx *= 0.974;   // amortiguación lenta = movimiento suave tipo lava
-      b.vy *= 0.974;
+      b.phase += b.phaseSpeed;
+      // flotación natural: sinusoide muy suave (sube y baja como cera caliente)
+      var buoy = Math.sin(b.phase) * 0.10;
+
+      b.vx += gx  * 0.016;
+      b.vy += gy  * 0.016 - buoy; // buoyancy va en sentido opuesto a "caer"
+
+      // Amortiguación alta = viscosidad
+      b.vx *= 0.965;
+      b.vy *= 0.965;
+
+      // Velocidad máxima muy baja — movimiento lento y denso
       var spd = Math.sqrt(b.vx*b.vx + b.vy*b.vy);
-      if (spd > 2.2) { b.vx = b.vx/spd*2.2; b.vy = b.vy/spd*2.2; }
+      if (spd > 0.9) { b.vx = b.vx/spd*0.9; b.vy = b.vy/spd*0.9; }
+
       b.x += b.vx; b.y += b.vy;
-      if (b.x - b.r < 0)  { b.x = b.r;   b.vx =  Math.abs(b.vx)*0.5; }
-      if (b.x + b.r > W)  { b.x = W-b.r; b.vx = -Math.abs(b.vx)*0.5; }
-      if (b.y - b.r < 0)  { b.y = b.r;   b.vy =  Math.abs(b.vy)*0.5; }
-      if (b.y + b.r > H)  { b.y = H-b.r; b.vy = -Math.abs(b.vy)*0.5; }
+
+      if (b.x - b.r < 0)  { b.x = b.r;   b.vx =  Math.abs(b.vx)*0.35; }
+      if (b.x + b.r > W)  { b.x = W-b.r; b.vx = -Math.abs(b.vx)*0.35; }
+      if (b.y - b.r < 0)  { b.y = b.r;   b.vy =  Math.abs(b.vy)*0.35; }
+      if (b.y + b.r > H)  { b.y = H-b.r; b.vy = -Math.abs(b.vy)*0.35; }
+
       b.el.style.transform = 'translate('+(b.x-b.r)+'px,'+(b.y-b.r)+'px)';
     });
   }
