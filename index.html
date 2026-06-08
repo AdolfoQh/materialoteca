@@ -73,19 +73,33 @@ body.buscando #orbe-img {
 .bienvenida-wrap .hint-tap { margin-top:32px; font-family:Roboto,sans-serif; font-weight:400; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.3); animation:pulso 2.5s ease-in-out infinite; }
 
 .buscador-wrap-outer {
-  position:fixed; top:120px; left:0; right:0; bottom:0;
-  padding:0; overflow-y:auto; opacity:0; transform:translateY(20px);
+  position:fixed; top:56px; left:0; right:0; bottom:0;
+  display:flex; flex-direction:column;
+  opacity:0; transform:translateY(20px);
   pointer-events:none; transition:opacity 0.7s ease 0.5s,transform 0.7s ease 0.5s; z-index:10;
+  overflow:hidden;
 }
 .buscador-wrap-outer.visible { opacity:1; transform:translateY(0); pointer-events:all; }
 
-/* Barra de búsqueda */
+/* Área scrolleable (sugerencias + resultados) */
+#buscador-content {
+  flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  display:flex; flex-direction:column;
+  justify-content:flex-end; /* sugerencias pegadas a la barra inicialmente */
+}
+body.has-results #buscador-content {
+  justify-content:flex-start; /* resultados desde arriba en modo chat */
+}
+body.has-results .seccion-label,
+body.has-results .sugerencias { display:none; }
+
+/* Barra de búsqueda — siempre al fondo */
 .search-bar {
   display:flex; gap:10px;
   padding:16px 20px;
   background:rgba(20,35,63,0.95);
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  position:sticky; top:0; z-index:5;
+  border-top:1px solid rgba(255,255,255,0.06);
+  flex-shrink:0;
 }
 .buscador {
   flex:1; background:rgba(255,255,255,0.07);
@@ -205,11 +219,11 @@ body.buscando   #lava-wrap { opacity:0; }
 
 /* Desktop max-width */
 @media (min-width:760px) {
-  .search-bar    { max-width:720px; margin:0 auto; }
-  .seccion-label { max-width:720px; margin:8px auto 2px; padding-left:0; }
-  .sugerencias   { max-width:720px; margin:0 auto; padding-left:0; }
-  .spinner-wrap  { max-width:720px; margin:0 auto; }
-  #resultados    { max-width:720px; margin:0 auto; }
+  #buscador-content { max-width:720px; margin:0 auto; width:100%; }
+  .search-bar       { max-width:720px; margin:0 auto; width:100%; }
+  .buscador-wrap-outer { align-items:center; }
+  .seccion-label { padding-left:0; }
+  .sugerencias   { padding-left:0; }
 }
 
 
@@ -592,25 +606,25 @@ body.buscando #header { opacity:1; pointer-events:all; }
 </div>
 <div class="buscador-wrap-outer" id="buscador-wrap">
 
+  <div id="buscador-content">
+    <div class="seccion-label">Sugerencias</div>
+    <div class="sugerencias">
+      <button class="sugerencia" onclick="usarSugerencia(this)">¿Qué es el cartón corrugado?</button>
+      <button class="sugerencia" onclick="usarSugerencia(this)">Material rígido y reciclable</button>
+      <button class="sugerencia" onclick="usarSugerencia(this)">Comparar cartón y PET</button>
+      <button class="sugerencia" onclick="usarSugerencia(this)">Material liviano para etiquetas</button>
+    </div>
+    <div class="spinner-wrap" id="spinner">
+      <div class="spinner"></div>
+      <span>Consultando...</span>
+    </div>
+    <div id="resultados"></div>
+  </div>
+
   <div class="search-bar">
     <input class="buscador" id="input-consulta" type="text" placeholder="¿Qué material necesitás?">
     <button class="btn-buscar" id="btn-consultar" onclick="consultar()">Consultar</button>
   </div>
-
-  <div class="seccion-label">Sugerencias</div>
-  <div class="sugerencias">
-    <button class="sugerencia" onclick="usarSugerencia(this)">¿Qué es el cartón corrugado?</button>
-    <button class="sugerencia" onclick="usarSugerencia(this)">Material rígido y reciclable</button>
-    <button class="sugerencia" onclick="usarSugerencia(this)">Comparar cartón y PET</button>
-    <button class="sugerencia" onclick="usarSugerencia(this)">Material liviano para etiquetas</button>
-  </div>
-
-  <div class="spinner-wrap" id="spinner">
-    <div class="spinner"></div>
-    <span>Consultando...</span>
-  </div>
-
-  <div id="resultados"></div>
 
 </div>
 <script>
@@ -728,6 +742,10 @@ async function consultar() {
   const spinner = document.getElementById("spinner");
   const resultados = document.getElementById("resultados");
 
+  // Primera búsqueda: activar modo chat (barra abajo, sugerencias ocultas)
+  document.body.classList.add("has-results");
+  sessionStorage.setItem("has-results", "1");
+
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div>';
   spinner.classList.add("visible");
@@ -738,6 +756,8 @@ async function consultar() {
   }
   resultados.innerHTML += '<div class="pregunta-usuario"><div class="pregunta-burbuja">' + consulta + '</div></div>';
   input.value = "";
+
+  const content = document.getElementById("buscador-content");
 
   try {
     const res = await fetch("https://materialoteca.vercel.app/api/consulta?consulta=" + encodeURIComponent(consulta));
@@ -750,7 +770,8 @@ async function consultar() {
     btn.disabled = false;
     btn.innerHTML = '→';
     spinner.classList.remove("visible");
-    resultados.lastElementChild && resultados.lastElementChild.scrollIntoView({ behavior:"smooth", block:"start" });
+    // Scroll al fondo del área de contenido
+    content.scrollTop = content.scrollHeight;
   }
 }
 
@@ -832,6 +853,8 @@ document.getElementById("input-consulta") && document.getElementById("input-cons
     document.getElementById("buscador-wrap").classList.add("visible");
     document.getElementById("btn-giro").style.display = "none";
     estado = "buscador";
+    // Restaurar modo chat si había resultados previos
+    if (sessionStorage.getItem("has-results")) document.body.classList.add("has-results");
   } else if (s === "bienvenida") {
     document.body.classList.add("bienvenida");
     document.getElementById("texto-splash").classList.add("oculto");
