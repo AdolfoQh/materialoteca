@@ -83,7 +83,9 @@ body.buscando #orbe-img {
 
 /* Área scrolleable (sugerencias + resultados) */
 #buscador-content {
-  flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  flex:1;
+  min-height:0; /* fix iOS Safari: sin esto flex:1 no scrollea */
+  overflow-y:auto; -webkit-overflow-scrolling:touch;
   display:flex; flex-direction:column;
   justify-content:flex-end; /* sugerencias pegadas a la barra inicialmente */
 }
