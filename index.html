@@ -87,11 +87,10 @@ body.buscando #orbe-img {
   min-height:0; /* fix iOS Safari: sin esto flex:1 no scrollea */
   overflow-y:auto; -webkit-overflow-scrolling:touch;
   display:flex; flex-direction:column;
-  justify-content:flex-end; /* sugerencias pegadas a la barra inicialmente */
 }
-body.has-results #buscador-content {
-  justify-content:flex-start; /* resultados desde arriba en modo chat */
-}
+/* Spacer empuja las sugerencias hacia abajo en el estado inicial */
+#buscador-spacer { flex:1; }
+body.has-results #buscador-spacer { display:none; }
 body.has-results .seccion-label,
 body.has-results .sugerencias { display:none; }
 
@@ -609,6 +608,7 @@ body.buscando #header { opacity:1; pointer-events:all; }
 <div class="buscador-wrap-outer" id="buscador-wrap">
 
   <div id="buscador-content">
+    <div id="buscador-spacer"></div>
     <div class="seccion-label">Sugerencias</div>
     <div class="sugerencias">
       <button class="sugerencia" onclick="usarSugerencia(this)">¿Qué es el cartón corrugado?</button>
